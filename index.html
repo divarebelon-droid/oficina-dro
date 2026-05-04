@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oficina D.R.O — Diagnóstico Estratégico</title>
+  <style>
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Black.otf') format('opentype'); font-weight:900; font-style:normal; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-BlackItalic.otf') format('opentype'); font-weight:900; font-style:italic; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Bold.otf') format('opentype'); font-weight:700; font-style:normal; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-BoldItalic.otf') format('opentype'); font-weight:700; font-style:italic; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Medium.otf') format('opentype'); font-weight:500; font-style:normal; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-MediumItalic.otf') format('opentype'); font-weight:500; font-style:italic; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Regular.otf') format('opentype'); font-weight:400; font-style:normal; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Light.otf') format('opentype'); font-weight:300; font-style:normal; }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --obsidian: #1a1a1a;
+      --limestone: #dcdad9;
+      --graphite: #494947;
+      --gravel: #7b787a;
+      --mist: #bebebf;
+      --pebble: #9fa4a2;
+    }
+
+    html { scroll-behavior:smooth; }
+
+    body {
+      font-family:'Satoshi', 'Inter', sans-serif;
+      background: var(--obsidian);
+      color: var(--limestone);
+      overflow-x: hidden;
+    }
+
+    /* ── PARTICLES & BACKGROUNDS ── */
+    #particles-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 24px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(26,26,26,0.80);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(220,218,217,0.08);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .logo-mark { width: 34px; height: 34px; object-fit: contain; }
+    .logo-text {
+      font-size: 15px; font-weight: 700; color: var(--limestone);
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .nav-links { display:flex; gap:36px; list-style:none; }
+    .nav-links a {
+      color: var(--gravel); text-decoration: none; font-size: 13px; font-weight: 500;
+      letter-spacing: 0.04em; transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--limestone); }
+
+    /* ── SECTIONS & CONTAINERS ── */
+    section { position:relative; z-index:1; }
+    .section-dark { background: transparent; }
+    .section-light { background: var(--limestone); }
+    .container    { max-width:1080px; margin:0 auto; padding:110px 48px; }
+    .container-sm { max-width:700px;  margin:0 auto; padding:110px 48px; }
+    .container-center { max-width:860px; margin:0 auto; padding:110px 48px; text-align:center; }
+
+    /* ── TYPOGRAPHY & LABELS ── */
+    .label {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--gravel);
+      border: 1px solid rgba(220,218,217,0.18); padding: 5px 14px; border-radius: 100px;
+      margin-bottom: 28px;
+    }
+    .label-dark { color: var(--graphite); border-color: rgba(26,26,26,0.2); }
+    .h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 900; line-height: 1.08; letter-spacing: -0.02em; color: var(--limestone); }
+    .h2 { font-size: clamp(28px, 4vw, 54px); font-weight: 900; line-height: 1.08; letter-spacing: -0.02em; color: var(--limestone); margin-bottom: 20px; }
+    .h2-dark { color: var(--obsidian); }
+    .h3 { font-size: clamp(20px, 2.5vw, 30px); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; color: var(--limestone); margin-bottom: 12px; }
+    .h3-dark { color: var(--obsidian); }
+    .lead { font-size: clamp(16px, 1.8vw, 20px); font-weight: 400; line-height: 1.75; color: var(--gravel); max-width: 580px; }
+    .lead-dark { color: var(--graphite); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items:center; gap:8px;
+      font-family:'Satoshi',sans-serif; font-size: 14px; font-weight: 700;
+      letter-spacing: 0.03em; padding: 15px 32px; border-radius: 7px;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      position: relative; overflow: hidden;
+    }
+    .btn::after { content:''; position:absolute; inset:0; background: rgba(255,255,255,0.12); opacity:0; transition: opacity 0.3s; }
+    .btn:hover::after { opacity:1; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-light { background: var(--limestone); color: var(--obsidian); }
+    .btn-light:hover { box-shadow: 0 10px 40px rgba(220,218,217,0.25); }
+    .btn-outline { background: transparent; color: var(--limestone); border: 1px solid rgba(220,218,217,0.25); }
+    .btn-outline:hover { border-color: rgba(220,218,217,0.5); background: rgba(220,218,217,0.05); }
+
+    /* ── KEYFRAMES & ANIMATIONS ── */
+    @keyframes spin-slow { 100% { transform: rotate(360deg); } }
+    @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+    @keyframes draw-path { to { stroke-dashoffset: 0; } }
+    @keyframes pulse-node { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }
+    @keyframes fade-up { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes dash-flow { to { stroke-dashoffset: -20; } }
+    @keyframes radar-scan { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes bar-grow { 0% { transform: scaleY(0.2); } 50% { transform: scaleY(1); } 100% { transform: scaleY(0.2); } }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity:0; transform: translateY(30px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.in { opacity:1; transform: translateY(0); }
+    .slide-l { opacity:0; transform: translateX(-40px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .slide-l.in { opacity:1; transform: translateX(0); }
+    .slide-r { opacity:0; transform: translateX(40px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .slide-r.in { opacity:1; transform: translateX(0); }
+    .d1 { transition-delay:0.10s; }
+    .d2 { transition-delay:0.20s; }
+    .d3 { transition-delay:0.30s; }
+    .d4 { transition-delay:0.40s; }
+    .d5 { transition-delay:0.50s; }
+
+    /* ── DIVIDER ── */
+    .divider { width:100%; height:1px; background:rgba(220,218,217,0.08); position:relative; z-index:2; }
+    .divider-dark { background:rgba(26,26,26,0.12); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center; padding: 140px 48px 100px; position: relative; overflow:hidden;
+    }
+    .hero-glow {
+      position:absolute; width: 700px; height: 700px; border-radius:50%;
+      background: radial-gradient(circle, rgba(190,190,191,0.10) 0%, rgba(123,120,122,0.05) 45%, transparent 70%);
+      top:50%; left:50%; transform: translate(-50%,-58%);
+      animation: glow-pulse 5s ease-in-out infinite; pointer-events:none;
+    }
+    .hero-tech-bg {
+      position: absolute; top: 50%; left: 50%; width: 600px; height: 600px;
+      transform: translate(-50%, -50%); pointer-events: none; opacity: 0.15; z-index: -1;
+    }
+    .hero-tech-bg .circle-1 { transform-origin: center; animation: spin-slow 40s linear infinite; }
+    .hero-tech-bg .circle-2 { transform-origin: center; animation: spin-reverse 50s linear infinite; }
+    @keyframes glow-pulse { 0%,100% { opacity:0.8; transform:translate(-50%,-58%) scale(1); } 50% { opacity:1; transform:translate(-50%,-58%) scale(1.08); } }
+    .hero .label { animation: fade-up 0.7s ease 0.05s both; }
+    .hero .h1 { max-width:880px; margin-bottom:28px; animation: fade-up 0.7s ease 0.18s both; }
+    .hero .lead { margin: 0 auto 52px; animation: fade-up 0.7s ease 0.30s both; }
+    .hero .btn { animation: fade-up 0.7s ease 0.42s both; }
+
+    /* ── PROBLEM SECTION (PERSPECTIVA) ── */
+    .tried-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:36px; overflow-x: hidden; padding-bottom: 10px; }
+    .tried-pill {
+      padding: 18px 22px; border: 1px solid rgba(26,26,26,0.12); border-radius: 10px;
+      font-size: 15px; font-weight: 500; color: var(--graphite); background: var(--limestone);
+      display:flex; align-items:center; gap:10px; transition: all 0.3s ease; position: relative; z-index: 2;
+    }
+    .tried-pill:hover { border-color: rgba(26,26,26,0.3); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(26,26,26,0.05); }
+    .tried-pill::before { content:''; width:5px; height:5px; border-radius:50%; background: var(--pebble); flex-shrink:0; }
+
+    /* SVG JORNADA DO CLIENTE INTERATIVA */
+    .journey-wrapper { width: 100%; overflow: visible; margin: 60px 0 40px; }
+    .journey-illustration { width: 100%; height: auto; display: block; overflow: visible; }
+    .path-animated { stroke-dasharray: 2000; stroke-dashoffset: 2000; animation: draw-path 3s ease forwards 0.5s; }
+    
+    .journey-group { cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-box: fill-box; transform-origin: center; }
+    .journey-group:hover { transform: scale(1.15); }
+    .node-text { font-family: 'Satoshi', sans-serif; font-size: 13px; font-weight: 700; fill: var(--graphite); pointer-events: none; }
+
+    .identify-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:30px; }
+    .identify-card {
+      padding:32px 28px; background: rgba(26,26,26,0.02);
+      border: 1px solid rgba(26,26,26,0.1); border-radius:12px;
+      transition: all 0.35s ease; position: relative;
+    }
+    .identify-card:hover {
+      border-color: rgba(26,26,26,0.3); background: rgba(26,26,26,0.05);
+      transform: translateY(-5px); box-shadow: 0 12px 30px rgba(26,26,26,0.08);
+    }
+    .identify-card .num { font-size:10px; font-weight:700; letter-spacing:0.14em; color: var(--pebble); text-transform:uppercase; margin-bottom:14px; }
+    .identify-card h3 { font-size:16px; font-weight:700; color:var(--obsidian); margin-bottom:8px; }
+    .identify-card p { font-size:14px; color:var(--graphite); line-height:1.65; }
+
+    /* ── SESSION SECTION ── */
+    .session-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:56px; }
+    .session-card {
+      padding:36px 30px; background: rgba(220,218,217,0.03);
+      border: 1px solid rgba(220,218,217,0.08); border-radius:14px;
+      transition: all 0.35s ease; position: relative;
+    }
+    .session-card:hover {
+      border-color: rgba(220,218,217,0.35); background: rgba(220,218,217,0.06);
+      transform: translateY(-5px); box-shadow: 0 0 35px rgba(220,218,217,0.08);
+    }
+    .session-card .step-num { font-size:10px; font-weight:700; letter-spacing:0.14em; color: var(--gravel); text-transform:uppercase; margin-bottom:18px; }
+    .session-card h3 { font-size:17px; font-weight:700; color:var(--limestone); margin-bottom:10px; }
+    .session-card p { font-size:14px; color:var(--gravel); line-height:1.65; }
+
+    /* ── PAIN LIST (CHECKLIST CASCATA) ── */
+    .pain-list { list-style:none; margin-top:44px; display:flex; flex-direction:column; gap:12px; }
+    .chasing-border-wrapper {
+      position: relative; overflow: hidden; border-radius: 12px; padding: 1.5px;
+    }
+    .chasing-border-wrapper::before {
+      content: ''; position: absolute; top: -100%; left: -100%; width: 300%; height: 300%;
+      background: conic-gradient(transparent, transparent 60%, rgba(26,26,26,0.6) 100%);
+      animation: spin-slow 4s linear infinite; pointer-events: none;
+    }
+    .chasing-border-inner {
+      display:flex; align-items:flex-start; gap:14px; padding:22px 26px;
+      background: var(--limestone); border-radius: 11px;
+      font-size:16px; font-weight:500; color: var(--graphite); line-height:1.5;
+      position: relative; z-index: 1; border: 1px solid rgba(26,26,26,0.05);
+    }
+    .pain-box { width:18px; height:18px; flex-shrink:0; margin-top:2px; border: 1.5px solid rgba(26,26,26,0.3); border-radius:4px; }
+
+    /* ── STATEMENT (FLUXOGRAMA COMERCIAL) ── */
+    .statement-super { font-size:12px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--gravel); margin-bottom:32px; }
+    .statement-title { font-size:clamp(32px,5vw,68px); font-weight:900; line-height:1.06; letter-spacing:-0.025em; color:var(--limestone); margin-bottom:20px; }
+    .statement-muted { color:var(--graphite); }
+    
+    .flowchart-svg { width: 100%; max-width: 550px; height: auto; margin: 0 auto 40px; display: block; overflow: visible; }
+    .flow-line { stroke-dasharray: 6; animation: dash-flow 1s linear infinite; }
+    
+    .works-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; max-width:680px; margin:48px auto 52px; }
+    .works-item { padding:18px 22px; background: rgba(220,218,217,0.04); border:1px solid rgba(220,218,217,0.09); border-radius:9px; font-size:14px; font-weight:500; color:var(--mist); display:flex; align-items:center; gap:10px; text-align:left; }
+    .works-item::before { content:'→'; color:var(--gravel); font-size:13px; }
+    .waste-line { font-size:18px; font-weight:500; color:var(--graphite); line-height:1.7; }
+
+    /* ── METHOD COM ILUSTRAÇÕES TECH FLUTUANTES ── */
+    .method-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:60px; }
+    .method-card {
+      padding:42px 36px; background: rgba(26,26,26,0.02);
+      border:1px solid rgba(26,26,26,0.10); border-radius:16px;
+      transition: all 0.3s ease; display: flex; flex-direction: column;
+    }
+    .method-card:hover { border-color:rgba(26,26,26,0.3); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(26,26,26,0.06); }
+    
+    /* Sem fundo preto, limpo e direto na cor do card */
+    .method-visual {
+      width: 100%; height: 120px; background: transparent; border: none;
+      margin-bottom: 24px; position: relative; overflow: visible;
+      display: flex; align-items: center; justify-content: flex-start;
+    }
+    
+    /* Animações ajustadas para fundos claros */
+    .radar-line { transform-origin: 50px 50px; animation: radar-scan 3s linear infinite; }
+    .wireframe-box { stroke-dasharray: 200; stroke-dashoffset: 200; animation: draw-path 2.5s ease forwards infinite alternate; }
+    .bar-1 { transform-origin: bottom; animation: bar-grow 2s ease-in-out infinite; }
+    .bar-2 { transform-origin: bottom; animation: bar-grow 2s ease-in-out infinite 0.4s; }
+    .bar-3 { transform-origin: bottom; animation: bar-grow 2s ease-in-out infinite 0.8s; }
+    .loop-circle { transform-origin: center; animation: pulse-node 3s infinite ease-in-out; }
+
+    .method-card .etapa { font-size:10px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--pebble); margin-bottom:12px; }
+    .method-card h3 { font-size:24px; font-weight:900; color:var(--obsidian); letter-spacing:-0.015em; margin-bottom:14px; }
+    .method-card p { font-size:15px; color:var(--graphite); line-height:1.7; }
+    
+    .method-rationale { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:40px; }
+    .rationale-item { padding:22px 24px; background: rgba(26,26,26,0.03); border:1px solid rgba(26,26,26,0.1); border-radius:10px; }
+    .rationale-item .rtag { font-size:9px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--pebble); margin-bottom:8px; }
+    .rationale-item p { font-size:14px; color:var(--graphite); line-height:1.6; font-weight:500; }
+
+    /* ── ABOUT / PHOTO COM MOLDURA ANIMADA ── */
+    .about-inner { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; max-width:1080px; margin:0 auto; padding:110px 48px; }
+    .about-img-wrap { position:relative; display: flex; justify-content: center; }
+    
+    .photo-tech-border {
+      position: relative; overflow: hidden; border-radius: 18px; padding: 2px;
+      width: 100%; max-width: 400px; /* Controle de tamanho da foto */
+    }
+    .photo-tech-border::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: conic-gradient(transparent, transparent 65%, var(--limestone) 100%);
+      animation: spin-slow 4s linear infinite; pointer-events: none; z-index: 0;
+    }
+    .photo-tech-border::after {
+      content: ''; position: absolute; inset: 2px;
+      background: var(--obsidian); border-radius: 16px; z-index: 1;
+    }
+    .photo-tech-border img {
+      position: relative; z-index: 2; width: 100%; border-radius: 16px;
+      display: block; filter: grayscale(15%);
+    }
+
+    .about-content .h2 { color:var(--limestone); }
+    .about-content .lead { color:var(--gravel); margin-bottom:16px; max-width:100%; }
+    .about-content .label { color:var(--gravel); border-color:rgba(220,218,217,0.18); }
+
+    /* ── FINAL CTA CARD COM GLOW INTENSO ── */
+    .final-wrap { max-width:860px; margin:0 auto; padding:110px 48px; }
+    .cta-card {
+      /* Fundo com efeito de brilho embutido */
+      background: radial-gradient(circle at 50% 0%, rgba(73,73,71,0.3) 0%, rgba(26,26,26,0.95) 75%);
+      background-color: var(--obsidian);
+      border:1px solid rgba(220,218,217,0.15); border-radius:22px;
+      padding:90px 64px; text-align:center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .cta-card .h2 { margin-bottom:18px; }
+    .cta-card .lead { margin:0 auto 52px; max-width:480px; }
+    .cta-steps { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:48px; }
+    
+    .cta-step {
+      padding:11px 18px; background: rgba(220,218,217,0.05);
+      border:1px solid rgba(220,218,217,0.10); border-radius:8px;
+      font-size:13px; font-weight:500; color:var(--mist);
+      display:flex; align-items:center; gap:8px;
+      transition: all 0.3s ease; cursor: default;
+    }
+    .cta-step:hover {
+      background: rgba(220,218,217,0.12); transform: translateY(-3px);
+      border-color: rgba(220,218,217,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .cta-step-n { width:20px; height:20px; border-radius:50%; background: rgba(220,218,217,0.1); font-size:10px; font-weight:700; color:var(--limestone); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--obsidian); border-top:1px solid rgba(220,218,217,0.07); padding:40px 48px; text-align:center; position:relative; z-index:2; }
+    footer p { font-size:13px; color:var(--gravel); }
+
+    /* ── RESPONSIVE BÁSICO & AVANÇADO ── */
+    @media(max-width:900px) {
+      nav { padding:20px 28px; }
+      .nav-links { display:none; }
+      .container, .container-sm, .container-center { padding:80px 28px; }
+      .identify-grid, .session-cards, .method-grid, .method-rationale { grid-template-columns:1fr; }
+      .about-inner { grid-template-columns:1fr; gap:50px; padding:80px 28px; }
+      .cta-card { padding:56px 28px; }
+      .final-wrap { padding:80px 28px; }
+      .cta-steps { flex-direction:column; align-items:center; width: 100%; }
+      .cta-step { width: 100%; justify-content: center; }
+    }
+    @media(max-width:600px) {
+      .tried-grid, .works-grid { grid-template-columns:1fr; }
+      .h1 { font-size: 32px; }
+      .h2 { font-size: 28px; }
+      .flowchart-svg { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<!-- ════ NAVBAR ════ -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img src="LOGO-DRO.png" alt="Logotipo Oficina D.R.O" class="logo-mark" />
+    <span class="logo-text">Oficina D.R.O</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#problema">Perspectiva</a></li>
+    <li><a href="#metodo">Método</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#sessao" style="color:var(--limestone);">Sessão gratuita</a></li>
+  </ul>
+</nav>
+
+<!-- ════ HERO ════ -->
+<section class="hero section-dark" id="home">
+  <svg class="hero-tech-bg" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle class="circle-1" cx="200" cy="200" r="180" stroke="#dcdad9" stroke-width="1" stroke-dasharray="4 12" />
+    <circle class="circle-2" cx="200" cy="200" r="140" stroke="#7b787a" stroke-width="1" stroke-dasharray="20 40" />
+    <path class="circle-1" d="M200 40 L200 60 M200 340 L200 360 M40 200 L60 200 M340 200 L360 200" stroke="#dcdad9" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  
+  <div class="hero-glow"></div>
+  <span class="label">Diagnóstico Estratégico</span>
+  <h1 class="h1">Receba um diagnóstico estratégico para destravar o faturamento do seu negócio</h1>
+  <p class="lead">Agende um bate papo online e entenda onde seu faturamento trava, por que ele trava e o que precisa ser ajustado no percurso do seu cliente para crescer com previsibilidade.</p>
+  <a href="https://api.whatsapp.com/message/INHRTEM6H4HFM1?autoload=1&app_absent=0" target="_blank" class="btn btn-light">Quero agendar a sessão gratuita &nbsp;→</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════ PROBLEMA (LIGHT) ════ -->
+<section class="section-light" id="problema">
+  <div class="container">
+    <span class="label label-dark reveal">Nossa perspectiva</span>
+    <h2 class="h2 h2-dark reveal">É sobre o caminho que o seu cliente percorre até comprar — e onde ele desiste.</h2>
+    <p class="lead lead-dark reveal">Muitas empresas já tentaram:</p>
+
+    <!-- Pílulas Deslizantes -->
+    <div class="tried-grid">
+      <div class="tried-pill slide-l">Social media</div>
+      <div class="tried-pill slide-r d1">Tráfego pago</div>
+      <div class="tried-pill slide-l d1">Anúncios esporádicos</div>
+      <div class="tried-pill slide-r d2">Indicações</div>
+    </div>
+
+    <!-- Jornada Expandida e Interativa -->
+    <div class="journey-wrapper reveal d1">
+      <svg class="journey-illustration" viewBox="0 0 1000 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <path class="path-animated" d="M50 50 Q 250 10, 500 50 T 950 50" stroke="#7b787a" stroke-width="2" stroke-dasharray="8 8" stroke-linecap="round"/>
+        
+        <!-- Nó 1 -->
+        <g class="journey-group">
+          <circle cx="50" cy="50" r="6" fill="#1a1a1a" />
+          <text x="50" y="80" text-anchor="middle" class="node-text">Descoberta</text>
+        </g>
+
+        <!-- Nó 2 -->
+        <g class="journey-group">
+          <circle cx="250" cy="30" r="6" fill="#1a1a1a" />
+          <text x="250" y="60" text-anchor="middle" class="node-text">Engajamento</text>
+        </g>
+
+        <!-- Nó 3 (Ruptura) -->
+        <g class="journey-group">
+          <circle class="node-pulse" cx="500" cy="50" r="8" fill="#dcdad9" stroke="#1a1a1a" stroke-width="3"/>
+          <text x="500" y="85" text-anchor="middle" class="node-text" style="fill:#1a1a1a; font-size:14px;">Ruptura Oculta</text>
+          <path d="M485 35 L515 65 M515 35 L485 65" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+        </g>
+
+        <!-- Nó 4 -->
+        <g class="journey-group">
+          <circle cx="750" cy="70" r="6" fill="#1a1a1a" />
+          <text x="750" y="100" text-anchor="middle" class="node-text">Checkout</text>
+        </g>
+
+        <!-- Nó 5 -->
+        <g class="journey-group">
+          <circle cx="950" cy="50" r="6" fill="#1a1a1a" />
+          <text x="950" y="80" text-anchor="middle" class="node-text">Retenção</text>
+        </g>
+      </svg>
+    </div>
+
+    <p class="reveal" style="margin-top:20px;font-size:18px;font-weight:500;color:var(--graphite);max-width:640px;line-height:1.75;">
+      E mesmo assim continuam estagnadas. Isso acontece porque nenhuma dessas ações funciona sozinha quando o percurso do cliente está quebrado.
+    </p>
+    <p class="reveal" style="margin-top:16px;font-size:16px;color:var(--pebble);max-width:600px;line-height:1.7;">
+      Eu analiso todo o percurso que o seu cliente faz até comprar de você — desde o primeiro contato até a recompra.
+    </p>
+
+    <!-- Cards Claros (Glow Hover) -->
+    <div class="identify-grid">
+      <div class="identify-card reveal d1">
+        <div class="num">01</div>
+        <h3>Onde você perde dinheiro</h3>
+        <p>Identifico os pontos exatos de vazamento de receita no seu processo comercial.</p>
+      </div>
+      <div class="identify-card reveal d2">
+        <div class="num">02</div>
+        <h3>Onde o cliente desiste</h3>
+        <p>Mapeio as rupturas no percurso do cliente que impedem a conversão.</p>
+      </div>
+      <div class="identify-card reveal d3">
+        <div class="num">03</div>
+        <h3>Oportunidade escondida</h3>
+        <p>Revelo onde existe potencial de faturamento que ainda não está sendo aproveitado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider divider-dark"></div>
+
+<!-- ════ SESSÃO GRATUITA (DARK) ════ -->
+<section class="section-dark" id="sessao">
+  <div class="container">
+    <span class="label reveal">Sessão gratuita</span>
+    <h2 class="h2 reveal">Agende uma sessão gratuita</h2>
+    <p class="lead reveal">Antes de qualquer execução, eu entendo o negócio. Nessa sessão:</p>
+
+    <!-- Cards Escuros (Neon Hover) -->
+    <div class="session-cards">
+      <div class="session-card reveal d1">
+        <div class="step-num">01 — Análise</div>
+        <h3>Cenário atual</h3>
+        <p>Eu analiso o seu cenário atual com profundidade — entendendo onde está o gargalo real do seu faturamento.</p>
+      </div>
+      <div class="session-card reveal d2">
+        <div class="step-num">02 — Diagnóstico</div>
+        <h3>Problema identificado</h3>
+        <p>Identifico um problema específico que está travando o seu faturamento agora. Sem achismo, com clareza.</p>
+      </div>
+      <div class="session-card reveal d3">
+        <div class="step-num">03 — Direcionamento</div>
+        <h3>Próximo passo prático</h3>
+        <p>Te entrego um direcionamento prático para corrigir esse ponto e desbloquear o crescimento do seu negócio.</p>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:60px;">
+      <a href="https://api.whatsapp.com/message/INHRTEM6H4HFM1?autoload=1&app_absent=0" target="_blank" class="btn btn-light reveal">Quero agendar a sessão gratuita &nbsp;→</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════ DOR / CHECKLIST EM CASCATA COM BORDA ANIMADA (LIGHT) ════ -->
+<section class="section-light">
+  <div class="container-sm">
+    <span class="label label-dark reveal">Essa sessão é pra você?</span>
+    <h2 class="h2 h2-dark reveal">Se hoje você vive pelo menos uma dessas situações, essa sessão é pra você:</h2>
+    
+    <ul class="pain-list">
+      <li class="reveal d1">
+        <div class="chasing-border-wrapper">
+          <div class="chasing-border-inner">
+            <div class="pain-box"></div>O faturamento não cresce, mesmo tentando várias coisas
+          </div>
+        </div>
+      </li>
+      <li class="reveal d2">
+        <div class="chasing-border-wrapper">
+          <div class="chasing-border-inner">
+            <div class="pain-box"></div>Você sente que "já fez de tudo", mas nada escala
+          </div>
+        </div>
+      </li>
+      <li class="reveal d3">
+        <div class="chasing-border-wrapper">
+          <div class="chasing-border-inner">
+            <div class="pain-box"></div>Até chegam clientes, mas poucos compram
+          </div>
+        </div>
+      </li>
+      <li class="reveal d4">
+        <div class="chasing-border-wrapper">
+          <div class="chasing-border-inner">
+            <div class="pain-box"></div>O atendimento não converte como deveria
+          </div>
+        </div>
+      </li>
+      <li class="reveal d5">
+        <div class="chasing-border-wrapper">
+          <div class="chasing-border-inner">
+            <div class="pain-box"></div>O negócio depende demais de você
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<div class="divider divider-dark"></div>
+
+<!-- ════ STATEMENT COM FLUXOGRAMA COMERCIAL (DARK) ════ -->
+<section class="section-dark">
+  <div class="container-center">
+    
+    <!-- Fluxograma Técnico (Fundo escuro, caixas claras) -->
+    <svg class="flowchart-svg reveal" viewBox="0 0 500 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path class="flow-line" d="M100 60 L150 60 M230 60 L280 60 M360 60 L410 60" stroke="#7b787a" stroke-width="2" stroke-linecap="round"/>
+      
+      <rect x="20" y="40" width="80" height="40" rx="6" stroke="#dcdad9" stroke-width="2" fill="rgba(220,218,217,0.05)"/>
+      <text x="60" y="64" text-anchor="middle" fill="#dcdad9" font-family="Satoshi, sans-serif" font-size="12" font-weight="700">Atração</text>
+      
+      <rect x="150" y="40" width="80" height="40" rx="6" stroke="#dcdad9" stroke-width="2" fill="rgba(220,218,217,0.05)"/>
+      <text x="190" y="64" text-anchor="middle" fill="#dcdad9" font-family="Satoshi, sans-serif" font-size="12" font-weight="700">Oferta</text>
+      
+      <rect x="280" y="40" width="80" height="40" rx="6" stroke="#dcdad9" stroke-width="2" fill="rgba(220,218,217,0.05)"/>
+      <text x="320" y="64" text-anchor="middle" fill="#dcdad9" font-family="Satoshi, sans-serif" font-size="12" font-weight="700">Venda</text>
+      
+      <rect x="410" y="40" width="80" height="40" rx="6" stroke="#dcdad9" stroke-width="2" fill="rgba(220,218,217,0.05)"/>
+      <text x="450" y="64" text-anchor="middle" fill="#dcdad9" font-family="Satoshi, sans-serif" font-size="12" font-weight="700">Retenção</text>
+    </svg>
+
+    <p class="statement-super reveal">A virada de chave</p>
+    <h2 class="statement-title reveal">
+      Você não precisa de mais marketing.<br>
+      <span class="statement-muted">Você precisa de estrutura.</span>
+    </h2>
+    <p class="lead reveal" style="margin:0 auto 8px;max-width:560px;">
+      Conteúdo, anúncios e tráfego só funcionam quando:
+    </p>
+    <div class="works-grid">
+      <div class="works-item reveal d1">A oferta está clara</div>
+      <div class="works-item reveal d2">O caminho do cliente faz sentido</div>
+      <div class="works-item reveal d3">O atendimento sustenta a venda</div>
+      <div class="works-item reveal d4">O negócio está preparado para crescer</div>
+    </div>
+    <p class="waste-line reveal">Sem isso, qualquer investimento vira desperdício.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════ MÉTODO COM ILUSTRAÇÕES TECH FLUTUANTES (LIGHT) ════ -->
+<section class="section-light" id="metodo">
+  <div class="container">
+    <span class="label label-dark reveal">Método</span>
+    <h2 class="h2 h2-dark reveal">Meu método é focado em faturamento — baseado em dados, não achismos</h2>
+    <p class="lead lead-dark reveal">Eu estruturo o crescimento do negócio em 4 etapas claras, respeitando o momento da empresa e evitando pular fases.</p>
+
+    <div class="method-grid">
+      <!-- Card 1 -->
+      <div class="method-card reveal d1">
+        <div class="method-visual">
+          <svg viewBox="0 0 100 100" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Cores ajustadas para fundo claro -->
+            <circle cx="50" cy="50" r="40" stroke="#dcdad9" stroke-width="2" stroke-dasharray="4 6"/>
+            <circle cx="50" cy="50" r="20" stroke="#7b787a" stroke-width="2"/>
+            <path class="radar-line" d="M50 50 L50 10 A40 40 0 0 1 90 50 Z" fill="url(#radar-grad)" opacity="0.6"/>
+            <defs>
+              <linearGradient id="radar-grad" x1="50" y1="50" x2="90" y2="10" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#494947" stop-opacity="0.8"/>
+                <stop offset="1" stop-color="#494947" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="etapa">Etapa 01</div>
+        <h3>Aprendizagem</h3>
+        <p>Entendemos o negócio de dentro para fora. Sem dados, nenhuma decisão é tomada. Esse é o alicerce de tudo.</p>
+      </div>
+      
+      <!-- Card 2 -->
+      <div class="method-card reveal d2">
+        <div class="method-visual">
+          <svg viewBox="0 0 100 100" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect class="wireframe-box" x="10" y="10" width="80" height="35" rx="4" stroke="#1a1a1a" stroke-width="2"/>
+            <rect class="wireframe-box" x="10" y="55" width="35" height="35" rx="4" stroke="#7b787a" stroke-width="2"/>
+            <rect class="wireframe-box" x="55" y="55" width="35" height="35" rx="4" stroke="#494947" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="etapa">Etapa 02</div>
+        <h3>Base Inicial</h3>
+        <p>Estruturamos os fundamentos que sustentam o crescimento. Oferta clara, percurso coerente e atendimento alinhado.</p>
+      </div>
+      
+      <!-- Card 3 -->
+      <div class="method-card reveal d3">
+        <div class="method-visual">
+          <svg viewBox="0 0 100 100" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect class="bar-1" x="20" y="50" width="12" height="30" rx="2" fill="#dcdad9"/>
+            <rect class="bar-2" x="44" y="35" width="12" height="45" rx="2" fill="#7b787a"/>
+            <rect class="bar-3" x="68" y="15" width="12" height="65" rx="2" fill="#1a1a1a"/>
+            <path d="M15 85 L85 85" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="etapa">Etapa 03</div>
+        <h3>Escala</h3>
+        <p>Validou e estruturou? Agora escalamos. Mais clientes, mais faturamento — sem aumentar o caos.</p>
+      </div>
+      
+      <!-- Card 4 -->
+      <div class="method-card reveal d4">
+        <div class="method-visual">
+          <svg viewBox="0 0 100 100" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 50 A30 30 0 1 1 80 50 A30 30 0 1 1 20 50" stroke="#dcdad9" stroke-width="2" stroke-dasharray="6 6"/>
+            <circle class="loop-circle" cx="50" cy="50" r="15" stroke="#1a1a1a" stroke-width="3"/>
+            <circle class="loop-circle" cx="50" cy="50" r="8" fill="#7b787a"/>
+            <path d="M75 45 L80 50 L85 45" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M25 55 L20 50 L15 55" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="etapa">Etapa 04</div>
+        <h3>Cavucação</h3>
+        <p>Extraímos mais valor de cada cliente já conquistado. Recompra, retenção e expansão de forma inteligente.</p>
+      </div>
+    </div>
+
+    <p class="reveal" style="margin-top:60px;font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--pebble);">Por que esse método funciona?</p>
+    <div class="method-rationale" style="margin-top:20px;">
+      <div class="rationale-item reveal d1">
+        <div class="rtag">Respeita</div>
+        <p>o momento do negócio</p>
+      </div>
+      <div class="rationale-item reveal d2">
+        <div class="rtag">Considera</div>
+        <p>o percurso real do cliente</p>
+      </div>
+      <div class="rationale-item reveal d3">
+        <div class="rtag">Exige</div>
+        <p>dados antes de decisões</p>
+      </div>
+    </div>
+    <p class="reveal" style="margin-top:28px;font-size:16px;color:var(--pebble);line-height:1.7;">
+      Antes de escalar, nós validamos. Antes de investir pesado, nós entendemos.
+    </p>
+  </div>
+</section>
+
+<div class="divider divider-dark"></div>
+
+<!-- ════ SOBRE / FOTO COM MOLDURA ANIMADA (DARK) ════ -->
+<section class="section-dark" id="sobre">
+  <div class="about-inner">
+    
+    <div class="about-img-wrap reveal">
+      <div class="photo-tech-border">
+        <img src="IMG_9298.jpg" alt="Aline Siqueira Santos de Castro Lima - Oficina D.R.O" />
+      </div>
+    </div>
+
+    <div class="about-content" style="padding-top:8px;">
+      <span class="label reveal">Quem está por trás</span>
+      <h2 class="h2 reveal" style="margin-top:4px;margin-bottom:16px;">Antes de qualquer execução, eu entendo o negócio.</h2>
+      <p class="reveal" style="font-size:16px;color:var(--gravel);line-height:1.75;margin-bottom:14px;">
+        Sou especialista em vendas e marketing com 9 anos de experiência na área. Ao longo dessa jornada, já atendi mais de 800 pessoas de diversos nichos empresariais, ajudando a estruturar e escalar negócios com previsibilidade.
+      </p>
+      <p class="reveal" style="font-size:16px;color:var(--gravel);line-height:1.75;margin-bottom:14px;">
+        No meu método, eu analiso todo o percurso que o seu cliente faz até comprar de você — desde o primeiro contato até a recompra. Identifico exatamente onde você perde dinheiro, onde o cliente desiste e onde existe oportunidade escondida de faturamento.
+      </p>
+      <div style="margin-top:32px;" class="reveal">
+        <a href="https://api.whatsapp.com/message/INHRTEM6H4HFM1?autoload=1&app_absent=0" target="_blank" class="btn btn-outline">Agendar sessão gratuita &nbsp;→</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════ FINAL CTA COM GLOW GRAPHITE (DARK) ════ -->
+<section class="section-dark">
+  <div class="final-wrap">
+    <div class="cta-card reveal">
+      <h2 class="h2">O primeiro passo é simples</h2>
+      <p class="lead" style="color:var(--gravel);margin:0 auto 52px;max-width:460px;">
+        Agende a sessão gratuita. Entenda onde seu faturamento trava. Decida com clareza o próximo movimento.
+      </p>
+      
+      <!-- Passos animados -->
+      <div class="cta-steps">
+        <div class="cta-step reveal d1"><div class="cta-step-n">1</div>Agende a sessão</div>
+        <div class="cta-step reveal d2"><div class="cta-step-n">2</div>Entenda onde trava</div>
+        <div class="cta-step reveal d3"><div class="cta-step-n">3</div>Decida o próximo passo</div>
+      </div>
+      
+      <a href="https://api.whatsapp.com/message/INHRTEM6H4HFM1?autoload=1&app_absent=0" target="_blank" class="btn btn-light reveal d4">Quero agendar a sessão gratuita &nbsp;→</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════ FOOTER ════ -->
+<footer>
+  <div style="margin-bottom: 16px; display: flex; justify-content: center;">
+    <img src="LOGO-DRO.png" alt="Logotipo Oficina D.R.O" style="width: 34px; height: auto; object-fit: contain;" />
+  </div>
+  <p>© 2026 Oficina D.R.O — <a href="direitos autorais.html" target="_blank" style="color:var(--gravel);text-decoration:underline;text-underline-offset:3px;transition:color 0.3s;" onmouseover="this.style.color='var(--mist)'" onmouseout="this.style.color='var(--gravel)'">Todos os direitos reservados</a></p>
+</footer>
+
+<script>
+// ── PARTICLES ──
+(function(){
+  const canvas = document.getElementById('particles-canvas');
+  const ctx    = canvas.getContext('2d');
+  let pts = [];
+
+  function resize(){
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function Pt(){
+    this.x  = Math.random() * canvas.width;
+    this.y  = Math.random() * canvas.height;
+    this.r  = Math.random() * 1.2 + 0.2;
+    this.vx = (Math.random() - 0.5) * 0.25;
+    this.vy = (Math.random() - 0.5) * 0.25;
+    this.a  = Math.random() * 0.45 + 0.05;
+    this.ph = Math.random() * Math.PI * 2;
+  }
+  Pt.prototype.tick = function(){
+    this.x  += this.vx;
+    this.y  += this.vy;
+    this.ph += 0.018;
+    if(this.x<0||this.x>canvas.width||this.y<0||this.y>canvas.height){
+      this.x = Math.random()*canvas.width;
+      this.y = Math.random()*canvas.height;
+    }
+  };
+  Pt.prototype.draw = function(){
+    const op = this.a * (0.65 + 0.35 * Math.sin(this.ph));
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(190,190,191,${op})`;
+    ctx.fill();
+  };
+
+  function init(){
+    pts = [];
+    const n = Math.min(Math.floor(canvas.width*canvas.height/7500), 160);
+    for(let i=0;i<n;i++) pts.push(new Pt());
+  }
+
+  function loop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pts.forEach(p=>{ p.tick(); p.draw(); });
+    requestAnimationFrame(loop);
+  }
+
+  resize(); init(); loop();
+  window.addEventListener('resize', ()=>{ resize(); init(); });
+})();
+
+// ── NAVBAR ──
+(function(){
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', ()=>{
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  }, { passive: true });
+})();
+
+// ── SCROLL REVEAL (INCLUI SLIDES) ──
+(function(){
+  const els = document.querySelectorAll('.reveal, .slide-l, .slide-r');
+  const io  = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.10, rootMargin:'0px 0px -30px 0px' });
+  els.forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>

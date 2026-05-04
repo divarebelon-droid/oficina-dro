@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Direitos Reservados — Oficina D.R.O</title>
+  <style>
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Black.otf') format('opentype'); font-weight:900; font-style:normal; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Bold.otf') format('opentype'); font-weight:700; font-style:normal; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Medium.otf') format('opentype'); font-weight:500; font-style:normal; }
+    @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Regular.otf') format('opentype'); font-weight:400; font-style:normal; }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --obsidian: #1a1a1a;
+      --limestone: #dcdad9;
+      --graphite: #494947;
+      --gravel: #7b787a;
+      --mist: #bebebf;
+      --pebble: #9fa4a2;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Satoshi', 'Inter', sans-serif;
+      background: var(--obsidian);
+      color: var(--limestone);
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity:0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.in { opacity:1; transform: translateY(0); }
+    .d1 { transition-delay:0.1s; }
+    .d2 { transition-delay:0.2s; }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(26,26,26,0.85);
+      backdrop-filter: blur(12px);
+      padding: 24px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(220,218,217,0.08);
+    }
+    .header-logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .header-logo img {
+      width: 32px; height: 32px; object-fit: contain;
+    }
+    .header-logo span {
+      font-size: 14px; font-weight: 700;
+      color: var(--limestone);
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .back-link {
+      font-size: 13px; font-weight: 500;
+      color: var(--gravel);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--limestone); }
+
+    /* ── HERO STRIP ── */
+    .doc-hero {
+      padding: 140px 60px 80px;
+      border-bottom: 1px solid rgba(220,218,217,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .doc-hero::before {
+      content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,120,122,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .container { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+    
+    .doc-label {
+      display: inline-block;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gravel);
+      border: 1px solid rgba(220,218,217,0.18);
+      padding: 5px 14px; border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .doc-hero h1 {
+      font-size: clamp(32px, 4vw, 54px);
+      font-weight: 900; line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--limestone);
+      max-width: 700px;
+      margin-bottom: 20px;
+    }
+    .doc-hero p {
+      font-size: 16px; color: var(--gravel); max-width: 600px; line-height: 1.7;
+    }
+    .doc-meta {
+      margin-top: 40px; display: flex; gap: 40px; flex-wrap: wrap;
+      padding-top: 32px; border-top: 1px solid rgba(220,218,217,0.08);
+    }
+    .doc-meta-item { font-size: 13px; font-weight: 500; color: var(--pebble); }
+    .doc-meta-item strong {
+      display: block; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gravel); margin-bottom: 6px;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .doc-body { max-width: 860px; margin: 0 auto; padding: 72px 48px 100px; }
+
+    /* ── TOC (ÍNDICE INTERATIVO) ── */
+    .toc { margin-bottom: 80px; }
+    .toc h2 {
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--gravel); margin-bottom: 24px;
+    }
+    .toc-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
+      counter-reset: toc-counter;
+    }
+    .toc-link {
+      counter-increment: toc-counter;
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 20px 24px; background: rgba(220,218,217,0.03);
+      border: 1px solid rgba(220,218,217,0.08); border-radius: 12px;
+      text-decoration: none; transition: all 0.3s ease;
+    }
+    .toc-link:hover {
+      background: rgba(220,218,217,0.06); border-color: rgba(220,218,217,0.25);
+      transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .toc-link::before {
+      content: '0' counter(toc-counter);
+      font-size: 10px; font-weight: 700; color: var(--pebble);
+      letter-spacing: 0.1em; padding-top: 3px;
+    }
+    .toc-link span { font-size: 14px; font-weight: 500; color: var(--mist); line-height: 1.5; }
+    .toc-link:hover span { color: var(--limestone); }
+
+    /* ── SECTIONS ── */
+    .doc-section {
+      margin-bottom: 64px; padding-bottom: 64px;
+      border-bottom: 1px solid rgba(220,218,217,0.08);
+      scroll-margin-top: 120px; /* Compensa o menu fixo ao clicar no link */
+    }
+    .doc-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    
+    .section-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 6px;
+      background: rgba(220,218,217,0.05); border: 1px solid rgba(220,218,217,0.1);
+      font-size: 10px; font-weight: 700; color: var(--pebble);
+      margin-bottom: 20px;
+    }
+    .doc-section h2 {
+      font-size: clamp(22px, 2.5vw, 32px); font-weight: 900; line-height: 1.15;
+      letter-spacing: -0.015em; color: var(--limestone); margin-bottom: 24px;
+    }
+    .doc-section p { font-size: 16px; color: var(--mist); line-height: 1.80; margin-bottom: 16px; }
+    .doc-section p:last-child { margin-bottom: 0; }
+    
+    .doc-section ul, .doc-section ol { margin: 20px 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .doc-section ul li, .doc-section ol li {
+      font-size: 15px; color: var(--mist); line-height: 1.70;
+      padding-left: 24px; position: relative;
+    }
+    .doc-section ul li::before {
+      content: '→'; position: absolute; left: 0; color: var(--gravel); font-size: 14px;
+    }
+    .doc-section ol { counter-reset: doc-ol; }
+    .doc-section ol li { counter-increment: doc-ol; }
+    .doc-section ol li::before {
+      content: counter(doc-ol) '.'; position: absolute; left: 0;
+      color: var(--pebble); font-size: 12px; font-weight: 700; padding-top: 2px;
+    }
+
+    /* Highlight Box Tech */
+    .highlight-box {
+      background: rgba(220,218,217,0.03);
+      border-left: 3px solid var(--graphite);
+      border-radius: 0 10px 10px 0;
+      padding: 24px 28px; margin: 28px 0;
+      font-size: 15px; color: var(--limestone); line-height: 1.75;
+      font-style: italic; position: relative;
+    }
+
+    /* ── CONTACT CARD ── */
+    .contact-card {
+      background: radial-gradient(120% 120% at 50% -20%, rgba(220,218,217,0.08) 0%, rgba(26,26,26,0.95) 80%);
+      border: 1px solid rgba(220,218,217,0.15);
+      border-radius: 16px; padding: 40px; margin-top: 28px;
+    }
+    .contact-card h3 { font-size: 18px; font-weight: 700; color: var(--limestone); margin-bottom: 12px; }
+    .contact-card p { font-size: 15px; color: var(--gravel); line-height: 1.7; margin-bottom: 16px; }
+    .contact-card .btn-light {
+      display: inline-flex; align-items:center; gap:8px;
+      font-size: 13px; font-weight: 700; letter-spacing: 0.03em;
+      padding: 12px 24px; border-radius: 6px; text-decoration: none;
+      background: var(--limestone); color: var(--obsidian);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .contact-card .btn-light:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(220,218,217,0.2); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--obsidian); border-top: 1px solid rgba(220,218,217,0.07);
+      padding: 48px 60px; text-align: center;
+    }
+    footer p { font-size: 13px; color: var(--gravel); }
+    footer a { color: var(--pebble); text-decoration: none; transition: color 0.3s; }
+    footer a:hover { color: var(--limestone); }
+
+    @media(max-width: 768px) {
+      header { padding: 20px 24px; }
+      .doc-hero { padding: 120px 24px 60px; }
+      .doc-body { padding: 60px 24px 80px; }
+      .toc-grid { grid-template-columns: 1fr; }
+      footer { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="oficinad-r-o.com.html" class="header-logo">
+    <img src="LOGO-DRO.png" alt="Logotipo Oficina D.R.O" />
+    <span>Oficina D.R.O</span>
+  </a>
+  <a href="oficinad-r-o.com.html" class="back-link">← Voltar ao site</a>
+</header>
+
+<!-- DOC HERO -->
+<div class="doc-hero">
+  <div class="container">
+    <span class="doc-label reveal">Documento Legal</span>
+    <h1 class="reveal d1">Termos de Uso e Direitos Reservados</h1>
+    <p class="reveal d2">Este documento estabelece os termos e condições de uso do site e dos serviços da Oficina D.R.O, bem como os direitos de propriedade intelectual aplicáveis.</p>
+    
+    <div class="doc-meta reveal d2">
+      <div class="doc-meta-item">
+        <strong>Última atualização</strong>
+        Maio de 2025
+      </div>
+      <div class="doc-meta-item">
+        <strong>Vigência</strong>
+        A partir de 01/05/2025
+      </div>
+      <div class="doc-meta-item">
+        <strong>Legislação aplicável</strong>
+        Lei Brasileira — Marco Civil da Internet e LGPD
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="doc-body">
+
+  <!-- TOC INTERATIVO -->
+  <div class="toc reveal">
+    <h2>Índice</h2>
+    <div class="toc-grid">
+      <a href="#direitos-autorais" class="toc-link"><span>Direitos Autorais e Propriedade Intelectual</span></a>
+      <a href="#uso-conteudo" class="toc-link"><span>Uso Permitido do Conteúdo</span></a>
+      <a href="#servicos" class="toc-link"><span>Descrição dos Serviços</span></a>
+      <a href="#responsabilidade" class="toc-link"><span>Limitação de Responsabilidade</span></a>
+      <a href="#privacidade" class="toc-link"><span>Privacidade e Proteção de Dados (LGPD)</span></a>
+      <a href="#cookies" class="toc-link"><span>Cookies e Tecnologias de Rastreamento</span></a>
+      <a href="#links" class="toc-link"><span>Links Externos</span></a>
+      <a href="#alteracoes" class="toc-link"><span>Alterações neste Documento</span></a>
+      <a href="#contato" class="toc-link"><span>Contato e Atendimento</span></a>
+    </div>
+  </div>
+
+  <!-- SEÇÕES -->
+  <div class="doc-section reveal" id="direitos-autorais">
+    <div class="section-num">01</div>
+    <h2>Direitos Autorais e Propriedade Intelectual</h2>
+    <p>Todo o conteúdo disponível neste site — incluindo, mas não se limitando a textos, metodologias, conceitos, identidade visual, logotipo, paleta de cores, tipografia, layout, estrutura de apresentação, vídeos, imagens e materiais — é de propriedade exclusiva da <strong>Oficina D.R.O</strong> e está protegido pela Lei de Direitos Autorais (Lei nº 9.610/1998) e demais legislações aplicáveis.</p>
+    <p>A marca <strong>Oficina D.R.O</strong>, incluindo seu logotipo e identidade visual, constitui propriedade intelectual protegida. Qualquer uso não autorizado caracteriza infração e estará sujeito às penalidades previstas em lei.</p>
+    <div class="highlight-box">
+      "A reprodução total ou parcial deste conteúdo sem autorização expressa e por escrito da Oficina D.R.O é expressamente proibida."
+    </div>
+    <p>As metodologias, frameworks e abordagens estratégicas desenvolvidas e apresentadas neste site são criações intelectuais originais da Oficina D.R.O e não podem ser replicadas, ensinadas ou comercializadas por terceiros sem licença formal.</p>
+  </div>
+
+  <div class="doc-section reveal" id="uso-conteudo">
+    <div class="section-num">02</div>
+    <h2>Uso Permitido do Conteúdo</h2>
+    <p>O acesso a este site é permitido para fins de consulta pessoal e obtenção de informações sobre os serviços oferecidos. É expressamente proibido:</p>
+    <ul>
+      <li>Reproduzir, distribuir, modificar ou criar obras derivadas de qualquer conteúdo sem autorização prévia e por escrito</li>
+      <li>Utilizar o conteúdo para fins comerciais sem licença formal</li>
+      <li>Remover ou alterar avisos de direitos autorais ou marcas registradas</li>
+      <li>Usar o nome "Oficina D.R.O" ou qualquer variação para fins de marketing, publicidade ou associação indevida</li>
+      <li>Scraping, coleta automatizada ou extração de dados deste site</li>
+      <li>Replicar a estrutura, design ou metodologia apresentada para fins concorrentes</li>
+    </ul>
+    <p>Citações breves para fins educativos ou jornalísticos são permitidas, desde que acompanhadas de atribuição clara e link para este site.</p>
+  </div>
+
+  <div class="doc-section reveal" id="servicos">
+    <div class="section-num">03</div>
+    <h2>Descrição dos Serviços</h2>
+    <p>A Oficina D.R.O oferece serviços de consultoria estratégica para negócios, com foco em diagnóstico comercial, estruturação do percurso do cliente e crescimento de faturamento. Os serviços incluem sessões de diagnóstico, acompanhamento estratégico e implementação de metodologias próprias.</p>
+    <p>As informações apresentadas neste site têm caráter meramente informativo e educativo. A contratação dos serviços está sujeita a análise prévia de alinhamento e disponibilidade, e é formalizada por meio de contrato específico entre as partes.</p>
+    <p>A Oficina D.R.O reserva-se o direito de recusar ou encerrar prestação de serviços a qualquer cliente, a seu exclusivo critério, sem obrigação de justificativa, desde que respeitados os termos de contratos já firmados.</p>
+  </div>
+
+  <div class="doc-section reveal" id="responsabilidade">
+    <div class="section-num">04</div>
+    <h2>Limitação de Responsabilidade</h2>
+    <p>As informações e conteúdos deste site são fornecidos "no estado em que se encontram", sem garantias expressas ou implícitas de qualquer natureza. A Oficina D.R.O não se responsabiliza por:</p>
+    <ul>
+      <li>Resultados específicos decorrentes da aplicação do conteúdo informativo disponível no site</li>
+      <li>Decisões tomadas pelo usuário com base nas informações aqui apresentadas sem contratação formal dos serviços</li>
+      <li>Interrupções temporárias no acesso ao site por razões técnicas ou de manutenção</li>
+      <li>Danos indiretos, incidentais ou consequentes resultantes do uso ou incapacidade de uso deste site</li>
+      <li>Conteúdo de sites de terceiros acessados por meio de links presentes neste site</li>
+    </ul>
+    <div class="highlight-box">
+      Os resultados obtidos com os serviços da Oficina D.R.O dependem de múltiplos fatores externos, incluindo o comprometimento do cliente, condições de mercado e contexto do negócio. Resultados passados não garantem resultados futuros.
+    </div>
+  </div>
+
+  <div class="doc-section reveal" id="privacidade">
+    <div class="section-num">05</div>
+    <h2>Privacidade e Proteção de Dados (LGPD)</h2>
+    <p>A Oficina D.R.O está comprometida com a proteção dos seus dados pessoais, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018).</p>
+    <p><strong>Quais dados coletamos:</strong></p>
+    <ul>
+      <li>Dados fornecidos voluntariamente ao entrar em contato via WhatsApp ou outros canais (nome, informações sobre o negócio)</li>
+      <li>Dados de navegação coletados automaticamente (endereço IP, navegador, páginas visitadas) para fins de análise de desempenho do site</li>
+    </ul>
+    <p><strong>Como utilizamos seus dados:</strong></p>
+    <ul>
+      <li>Para responder às suas solicitações e agendamentos</li>
+      <li>Para melhorar a experiência de navegação no site</li>
+      <li>Para comunicações relacionadas aos serviços contratados ou solicitados</li>
+    </ul>
+    <p><strong>Seus direitos como titular de dados:</strong></p>
+    <ul>
+      <li>Acesso aos dados pessoais que mantemos sobre você</li>
+      <li>Correção de dados incompletos, inexatos ou desatualizados</li>
+      <li>Eliminação dos dados tratados com base no seu consentimento</li>
+      <li>Informação sobre o compartilhamento de dados com terceiros</li>
+      <li>Revogação do consentimento a qualquer momento</li>
+    </ul>
+    <p>Não vendemos, alugamos ou compartilhamos seus dados pessoais com terceiros para fins comerciais. Para exercer seus direitos ou tirar dúvidas sobre o tratamento dos seus dados, entre em contato pelo canal indicado na seção 9 deste documento.</p>
+  </div>
+
+  <div class="doc-section reveal" id="cookies">
+    <div class="section-num">06</div>
+    <h2>Cookies e Tecnologias de Rastreamento</h2>
+    <p>Este site pode utilizar cookies e tecnologias similares para melhorar a experiência de navegação e analisar o tráfego. Os cookies são pequenos arquivos de texto armazenados no seu dispositivo.</p>
+    <p>Utilizamos:</p>
+    <ul>
+      <li><strong>Cookies essenciais:</strong> necessários para o funcionamento básico do site</li>
+      <li><strong>Cookies analíticos:</strong> para entender como os visitantes interagem com o site (dados agregados e anônimos)</li>
+    </ul>
+    <p>Você pode configurar seu navegador para recusar cookies, mas isso pode afetar algumas funcionalidades do site. Ao continuar navegando, você consente com o uso de cookies nos termos descritos acima.</p>
+  </div>
+
+  <div class="doc-section reveal" id="links">
+    <div class="section-num">07</div>
+    <h2>Links Externos</h2>
+    <p>Este site pode conter links para sites de terceiros, como plataformas de agendamento e redes sociais. Esses links são fornecidos apenas para conveniência e informativos. A Oficina D.R.O não tem controle sobre o conteúdo desses sites e não assume responsabilidade pelas suas práticas de privacidade ou pelo conteúdo neles disponível.</p>
+    <p>A inclusão de qualquer link não implica endosso ou recomendação do site vinculado pela Oficina D.R.O.</p>
+  </div>
+
+  <div class="doc-section reveal" id="alteracoes">
+    <div class="section-num">08</div>
+    <h2>Alterações neste Documento</h2>
+    <p>A Oficina D.R.O reserva-se o direito de atualizar estes Termos de Uso e a Política de Privacidade a qualquer momento, sem aviso prévio, para refletir mudanças em nossas práticas, serviços ou legislação aplicável.</p>
+    <p>A data de "Última atualização" indicada no topo deste documento reflete a versão mais recente. O uso continuado do site após qualquer alteração constitui sua aceitação dos termos revisados.</p>
+    <p>Recomendamos que você revise este documento periodicamente para se manter informado sobre eventuais atualizações.</p>
+  </div>
+
+  <div class="doc-section reveal" id="contato">
+    <div class="section-num">09</div>
+    <h2>Contato</h2>
+    <p>Para dúvidas, solicitações relacionadas aos seus dados pessoais, questões sobre propriedade intelectual ou qualquer assunto relacionado a este documento, entre em contato:</p>
+    <div class="contact-card">
+      <h3>Oficina D.R.O</h3>
+      <p>Para entrar em contato, utilize nosso canal oficial de atendimento:</p>
+      <a href="https://api.whatsapp.com/message/INHRTEM6H4HFM1?autoload=1&app_absent=0" target="_blank" class="btn-light">→ Falar via WhatsApp</a>
+      <p style="margin-top:20px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--pebble);">Respondemos em até 2 dias úteis.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div style="margin-bottom: 20px; display: flex; justify-content: center;">
+    <img src="LOGO-DRO.png" alt="Logotipo Oficina D.R.O" style="width: 34px; height: auto; object-fit: contain;" />
+  </div>
+  <p>© 2026 <a href="oficinad-r-o.com.html">Oficina D.R.O</a> — Todos os direitos reservados. Documento regido pela legislação brasileira.</p>
+</footer>
+
+<script>
+// ── SCROLL REVEAL SCRIPT ──
+(function(){
+  const els = document.querySelectorAll('.reveal');
+  const io  = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.10, rootMargin:'0px 0px -30px 0px' });
+  els.forEach(el => io.observe(el));
+})();
+</script>
+
+</body>
+</html>

@@ -10,185 +10,234 @@
     @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Medium.otf') format('opentype'); font-weight:500; }
     @font-face { font-family:'Satoshi'; src:url('satoshi/Satoshi-Regular.otf') format('opentype'); font-weight:400; }
 
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; cursor:none !important; }
+
     :root {
-      --obsidian:#1a1a1a; --surface:#222222; --surface2:#2a2a2a;
-      --limestone:#dcdad9; --graphite:#494947;
-      --gravel:#7b787a; --mist:#bebebf; --pebble:#9fa4a2;
-      --sidebar:220px;
+      --void:#070707; --deep:#0c0c0c; --surface:#0f0f0f; --lift:#141414;
+      --limestone:#dcdad9; --gravel:#7b787a; --mist:#bebebf; --pebble:#9fa4a2; --graphite:#494947;
+      --sidebar-w:252px;
     }
+
     html { scroll-behavior:smooth; }
-    body { font-family:'Satoshi','Inter',sans-serif; background:var(--obsidian); color:var(--limestone); min-height:100vh; display:flex; }
+    body { font-family:'Satoshi','Inter',sans-serif; background:var(--void); color:var(--limestone); min-height:100vh; display:flex; overflow-x:hidden; }
+
+    /* ── FIXED LAYERS ── */
+    #bg-canvas    { position:fixed; inset:0; z-index:0; pointer-events:none; }
+    #grain-canvas { position:fixed; inset:0; z-index:9997; pointer-events:none; opacity:.028; }
+    .c-dot  { position:fixed; width:5px; height:5px; background:var(--limestone); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); mix-blend-mode:difference; }
+    .c-ring { position:fixed; width:34px; height:34px; border:1.5px solid rgba(220,218,217,.38); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .28s,height .28s,border-color .28s; }
+    .c-ring.hov { width:52px; height:52px; border-color:var(--limestone); }
+    .c-ring.clk { width:18px; height:18px; }
+    body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:1;
+      background:radial-gradient(680px circle at var(--smx,30%) var(--smy,30%),rgba(220,218,217,.03),transparent 50%); }
+    .scan-line { position:fixed; left:0; right:0; height:1px; z-index:2; pointer-events:none;
+      background:linear-gradient(to right,transparent,rgba(220,218,217,.1) 35%,rgba(220,218,217,.18) 50%,rgba(220,218,217,.1) 65%,transparent);
+      animation:scan 12s linear infinite; }
+    @keyframes scan { 0%{top:-2px} 100%{top:100%} }
+    .ripple-fx { position:fixed; border-radius:50%; pointer-events:none; z-index:9996; }
 
     /* ── SIDEBAR ── */
     .sidebar {
-      width:var(--sidebar); min-height:100vh; background:var(--surface);
-      border-right:1px solid rgba(220,218,217,0.07);
+      width:var(--sidebar-w); min-height:100vh;
+      background:rgba(10,10,10,.95); border-right:1px solid rgba(220,218,217,.06);
       display:flex; flex-direction:column; position:fixed; top:0; left:0; z-index:50;
+      backdrop-filter:blur(20px);
     }
+
     .sidebar-logo {
-      padding:28px 24px; border-bottom:1px solid rgba(220,218,217,0.07);
+      padding:26px 22px; border-bottom:1px solid rgba(220,218,217,.06);
       display:flex; align-items:center; gap:10px; text-decoration:none;
     }
-    .sidebar-logo img { width:30px; height:30px; object-fit:contain; }
-    .sidebar-logo span { font-size:13px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--limestone); }
-    .sidebar-section { padding:28px 20px 8px; font-size:9px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--gravel); }
+    .sidebar-logo img { width:28px; height:28px; object-fit:contain; filter:brightness(0) invert(1); opacity:.82; }
+    .sidebar-logo span { font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--limestone); }
+
+    .sidebar-section { padding:24px 20px 8px; font-size:8.5px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(220,218,217,.3); }
+
     .sidebar-item {
       display:flex; align-items:center; gap:12px;
-      padding:12px 20px; font-size:14px; font-weight:500; color:var(--mist);
-      text-decoration:none; border-radius:0; cursor:pointer; border:none; background:none;
-      width:100%; text-align:left;
-      transition:background 0.2s, color 0.2s;
-      border-left:2px solid transparent;
+      padding:11px 20px; font-size:13.5px; font-weight:500; color:var(--gravel);
+      text-decoration:none; cursor:pointer; border:none; background:none;
+      width:100%; text-align:left; border-left:2px solid transparent;
+      transition:background .2s,color .2s,border-color .2s;
     }
-    .sidebar-item:hover { background:rgba(220,218,217,0.05); color:var(--limestone); }
-    .sidebar-item.active { color:var(--limestone); background:rgba(220,218,217,0.07); border-left-color:var(--limestone); }
-    .sidebar-item svg { flex-shrink:0; opacity:0.6; }
-    .sidebar-item.active svg { opacity:1; }
-    .sidebar-footer { margin-top:auto; padding:20px; border-top:1px solid rgba(220,218,217,0.07); }
-    .sidebar-footer a { font-size:12px; color:var(--gravel); text-decoration:none; display:flex; align-items:center; gap:8px; transition:color 0.2s; }
+    .sidebar-item:hover { background:rgba(220,218,217,.04); color:var(--mist); }
+    .sidebar-item.active { color:var(--limestone); background:rgba(220,218,217,.06); border-left-color:var(--limestone); }
+    .sidebar-item svg { flex-shrink:0; opacity:.5; transition:opacity .2s; }
+    .sidebar-item.active svg, .sidebar-item:hover svg { opacity:.85; }
+
+    .sidebar-footer { margin-top:auto; padding:18px 20px; border-top:1px solid rgba(220,218,217,.06); }
+    .sidebar-footer a { font-size:12px; color:var(--gravel); text-decoration:none; display:flex; align-items:center; gap:8px; transition:color .2s; }
     .sidebar-footer a:hover { color:var(--limestone); }
 
     /* ── MAIN ── */
-    .main { margin-left:var(--sidebar); flex:1; display:flex; flex-direction:column; min-height:100vh; }
+    .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; min-height:100vh; position:relative; z-index:2; }
 
-    /* TOP BAR */
+    /* TOPBAR */
     .topbar {
-      height:64px; background:var(--surface); border-bottom:1px solid rgba(220,218,217,0.07);
+      height:62px; background:rgba(8,8,8,.9); border-bottom:1px solid rgba(220,218,217,.06);
       display:flex; align-items:center; justify-content:space-between;
       padding:0 40px; position:sticky; top:0; z-index:40;
+      backdrop-filter:blur(16px);
     }
-    .topbar-title { font-size:16px; font-weight:700; color:var(--limestone); }
+    .topbar-left { display:flex; align-items:center; gap:16px; }
+    .topbar-title { font-size:14px; font-weight:700; color:var(--limestone); letter-spacing:.01em; }
     .topbar-user { display:flex; align-items:center; gap:12px; }
     .user-avatar {
-      width:36px; height:36px; border-radius:50%;
-      background:rgba(220,218,217,0.12); border:1px solid rgba(220,218,217,0.2);
+      width:34px; height:34px; border-radius:50%;
+      background:rgba(220,218,217,.1); border:1px solid rgba(220,218,217,.18);
       display:flex; align-items:center; justify-content:center;
-      font-size:13px; font-weight:700; color:var(--limestone);
+      font-size:12px; font-weight:900; color:var(--limestone);
     }
-    .user-name { font-size:14px; font-weight:500; color:var(--mist); }
+    .user-name { font-size:13px; font-weight:500; color:var(--mist); }
+    .mobile-menu-btn { display:none; background:none; border:none; color:var(--limestone); padding:6px; }
 
     /* CONTENT */
-    .content { padding:40px; flex:1; }
+    .content { padding:36px 40px; flex:1; }
 
     /* WELCOME BANNER */
     .welcome-banner {
-      background:radial-gradient(circle at 20% 50%, rgba(73,73,71,0.4) 0%, rgba(26,26,26,0.9) 70%);
-      border:1px solid rgba(220,218,217,0.1); border-radius:16px;
-      padding:40px 48px; margin-bottom:40px; display:flex; align-items:center; gap:40px;
+      position:relative; border-radius:20px; padding:2px; overflow:hidden; margin-bottom:36px;
     }
-    .welcome-text h2 { font-size:clamp(20px,2.5vw,28px); font-weight:900; letter-spacing:-0.02em; margin-bottom:8px; }
-    .welcome-text p { font-size:15px; color:var(--gravel); line-height:1.6; max-width:500px; }
+    @keyframes spin-slow { to { transform:rotate(360deg); } }
+    .welcome-banner::before { content:''; position:absolute; top:-100%; left:-100%; width:300%; height:300%;
+      background:conic-gradient(transparent,transparent 88%,rgba(220,218,217,.55) 90%,transparent 92%);
+      animation:spin-slow 10s linear infinite; pointer-events:none; }
+    .welcome-inner {
+      position:relative; z-index:2; border-radius:18px;
+      background:radial-gradient(circle at 20% 50%,rgba(73,73,71,.25) 0%,rgba(7,7,7,.97) 65%);
+      border:none; padding:36px 44px; display:flex; align-items:center; gap:36px;
+    }
+    .welcome-text h2 { font-size:clamp(18px,2.2vw,26px); font-weight:900; letter-spacing:-.03em; margin-bottom:8px; }
+    .welcome-text p { font-size:14px; color:var(--gravel); line-height:1.65; max-width:500px; }
     .welcome-badge {
-      flex-shrink:0; width:80px; height:80px; border-radius:50%;
-      background:rgba(220,218,217,0.08); border:1px solid rgba(220,218,217,0.15);
+      flex-shrink:0; width:72px; height:72px; border-radius:50%;
+      background:rgba(220,218,217,.06); border:1px solid rgba(220,218,217,.14);
       display:flex; align-items:center; justify-content:center;
     }
 
     /* PROGRESS */
-    .progress-section { margin-bottom:40px; }
-    .progress-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-    .section-title { font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--pebble); }
-    .progress-bar-outer { height:4px; background:rgba(220,218,217,0.1); border-radius:100px; overflow:hidden; }
-    .progress-bar-inner { height:100%; background:var(--limestone); border-radius:100px; transition:width 1s ease; }
+    .progress-section { margin-bottom:36px; }
+    .progress-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .section-label { font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(220,218,217,.3); }
+    .progress-count { font-size:12px; color:var(--pebble); }
+    .progress-bar-outer { height:3px; background:rgba(220,218,217,.08); border-radius:100px; overflow:hidden; }
+    .progress-bar-inner { height:100%; background:linear-gradient(to right,rgba(220,218,217,.5),var(--limestone)); border-radius:100px; width:0%; transition:width 1.2s cubic-bezier(.16,1,.3,1); }
 
     /* MODULES GRID */
-    .modules-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px; margin-bottom:40px; }
+    .modules-title { font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(220,218,217,.3); margin-bottom:18px; }
+    .modules-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:18px; margin-bottom:36px; }
+
     .module-card {
-      background:var(--surface2); border:1px solid rgba(220,218,217,0.08);
-      border-radius:14px; overflow:hidden; cursor:pointer;
-      transition:transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      position:relative; background:rgba(255,255,255,.022); border:1px solid rgba(220,218,217,.07);
+      border-radius:18px; overflow:hidden; transition:border-color .4s,transform .12s ease,background .4s;
     }
-    .module-card:hover { transform:translateY(-4px); border-color:rgba(220,218,217,0.25); box-shadow:0 12px 40px rgba(0,0,0,0.3); }
+    .module-card::before { content:''; position:absolute; inset:0;
+      background:radial-gradient(circle at var(--bx,50%) var(--by,50%),rgba(220,218,217,.06) 0%,transparent 65%);
+      opacity:0; transition:opacity .4s; z-index:0; }
+    .module-card.active-card { cursor:pointer; }
+    .module-card.active-card:hover { border-color:rgba(220,218,217,.22); background:rgba(255,255,255,.04); }
+    .module-card.active-card:hover::before { opacity:1; }
+
     .module-thumb {
-      height:160px; background:linear-gradient(135deg, rgba(73,73,71,0.8) 0%, rgba(26,26,26,0.9) 100%);
+      height:155px; background:linear-gradient(135deg,rgba(40,40,38,.9) 0%,rgba(7,7,7,.95) 100%);
       display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
     }
-    .module-thumb::before {
-      content:''; position:absolute; inset:0;
-      background:radial-gradient(circle at 50% 50%, rgba(220,218,217,0.08) 0%, transparent 70%);
-    }
-    .module-thumb svg { position:relative; z-index:1; }
+    .module-thumb::after { content:''; position:absolute; inset:0;
+      background:radial-gradient(circle at 50% 50%,rgba(220,218,217,.06) 0%,transparent 70%); }
+
+    /* scanlines on thumb */
+    .module-thumb::before { content:''; position:absolute; inset:0; z-index:1;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.18) 2px,rgba(0,0,0,.18) 4px);
+      pointer-events:none; }
+
     .play-btn {
       position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-      width:52px; height:52px; border-radius:50%;
-      background:rgba(220,218,217,0.15); border:2px solid rgba(220,218,217,0.4);
+      width:50px; height:50px; border-radius:50%;
+      background:rgba(220,218,217,.12); border:1.5px solid rgba(220,218,217,.38);
       display:flex; align-items:center; justify-content:center;
-      transition:background 0.3s, transform 0.3s; z-index:2;
+      transition:background .3s,transform .3s; z-index:3;
     }
-    .module-card:hover .play-btn { background:rgba(220,218,217,0.25); transform:translate(-50%,-50%) scale(1.1); }
-    .module-locked { position:absolute; top:12px; right:12px; z-index:2; }
-    .badge-locked { background:rgba(26,26,26,0.8); border:1px solid rgba(220,218,217,0.2); border-radius:100px; padding:3px 10px; font-size:10px; font-weight:700; color:var(--gravel); letter-spacing:0.08em; text-transform:uppercase; }
-    .badge-free { background:rgba(220,218,217,0.1); border:1px solid rgba(220,218,217,0.25); border-radius:100px; padding:3px 10px; font-size:10px; font-weight:700; color:var(--limestone); letter-spacing:0.08em; text-transform:uppercase; }
-    .module-body { padding:24px 24px 20px; }
-    .module-num { font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--gravel); margin-bottom:8px; }
-    .module-title { font-size:17px; font-weight:700; color:var(--limestone); margin-bottom:8px; line-height:1.3; }
-    .module-desc { font-size:13px; color:var(--gravel); line-height:1.6; margin-bottom:16px; }
-    .module-meta { display:flex; align-items:center; gap:16px; }
-    .module-duration { font-size:12px; color:var(--pebble); display:flex; align-items:center; gap:5px; }
+    .module-card.active-card:hover .play-btn { background:rgba(220,218,217,.25); transform:translate(-50%,-50%) scale(1.1); }
 
-    /* LESSON MODAL */
+    .badge { position:absolute; top:12px; right:12px; z-index:3;
+      padding:3px 10px; border-radius:100px; font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    .badge-free { background:rgba(220,218,217,.12); border:1px solid rgba(220,218,217,.28); color:var(--limestone); }
+    .badge-soon { background:rgba(7,7,7,.75); border:1px solid rgba(220,218,217,.15); color:var(--gravel); }
+
+    .module-body { padding:22px 22px 18px; position:relative; z-index:1; }
+    .module-num { font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(220,218,217,.25); margin-bottom:8px; }
+    .module-title { font-size:16px; font-weight:700; color:var(--limestone); margin-bottom:6px; line-height:1.35; }
+    .module-desc { font-size:13px; color:var(--gravel); line-height:1.62; margin-bottom:14px; }
+    .module-meta { display:flex; align-items:center; gap:14px; }
+    .module-duration { font-size:11.5px; color:var(--pebble); display:flex; align-items:center; gap:5px; }
+
+    /* CTA STRIP */
+    .cta-strip {
+      position:relative; border-radius:18px; overflow:hidden;
+      background:radial-gradient(circle at 50% 0%,rgba(73,73,71,.2) 0%,transparent 65%);
+      border:1px solid rgba(220,218,217,.08); padding:44px; text-align:center; margin-bottom:36px;
+    }
+    .cta-strip h3 { font-size:22px; font-weight:900; letter-spacing:-.025em; margin-bottom:10px; }
+    .cta-strip p { font-size:14px; color:var(--gravel); margin-bottom:28px; max-width:440px; margin-left:auto; margin-right:auto; line-height:1.7; }
+    .btn {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:'Satoshi',sans-serif; font-size:14px; font-weight:900;
+      padding:15px 32px; border-radius:10px; text-decoration:none; border:none; position:relative; overflow:hidden;
+      transition:transform .3s,box-shadow .3s;
+    }
+    .btn::before { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent); transform:translateX(-100%); transition:transform .55s; }
+    .btn:hover::before { transform:translateX(100%); }
+    .btn-light { background:var(--limestone); color:var(--void); }
+    .btn-light:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(220,218,217,.2); }
+
+    /* MODAL */
     .modal-overlay {
-      display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75);
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.82);
       z-index:200; align-items:center; justify-content:center; padding:24px;
+      backdrop-filter:blur(6px);
     }
     .modal-overlay.open { display:flex; }
     .modal {
-      background:var(--surface); border:1px solid rgba(220,218,217,0.1);
-      border-radius:20px; width:100%; max-width:780px; max-height:90vh; overflow-y:auto;
+      background:var(--surface); border:1px solid rgba(220,218,217,.1);
+      border-radius:22px; width:100%; max-width:760px; max-height:90vh; overflow-y:auto;
+      box-shadow:0 40px 80px rgba(0,0,0,.6);
+      animation:modal-in .25s cubic-bezier(.16,1,.3,1);
     }
-    .modal-header { padding:24px 32px; border-bottom:1px solid rgba(220,218,217,0.07); display:flex; justify-content:space-between; align-items:center; }
-    .modal-header h3 { font-size:18px; font-weight:700; }
-    .modal-close { background:none; border:none; color:var(--gravel); cursor:pointer; font-size:22px; padding:4px; transition:color 0.2s; }
+    @keyframes modal-in { from{opacity:0;transform:scale(.96) translateY(12px)} to{opacity:1;transform:none} }
+    .modal-header { padding:22px 30px; border-bottom:1px solid rgba(220,218,217,.07); display:flex; justify-content:space-between; align-items:center; }
+    .modal-header h3 { font-size:17px; font-weight:700; letter-spacing:-.01em; }
+    .modal-close { background:none; border:none; color:var(--gravel); font-size:20px; padding:4px; transition:color .2s; line-height:1; }
     .modal-close:hover { color:var(--limestone); }
-    .modal-body { padding:32px; }
-    .video-wrap { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; background:#000; margin-bottom:28px; }
-    .video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; border-radius:12px; }
-    .modal-desc { font-size:15px; color:var(--gravel); line-height:1.75; }
-
-    /* COMING SOON */
-    .coming-section { background:var(--surface2); border:1px solid rgba(220,218,217,0.07); border-radius:14px; padding:40px; text-align:center; margin-bottom:40px; }
-    .coming-section h3 { font-size:20px; font-weight:700; margin-bottom:8px; }
-    .coming-section p { font-size:14px; color:var(--gravel); }
-
-    /* CTA */
-    .cta-strip {
-      background:radial-gradient(circle at 50% 0%, rgba(73,73,71,0.3) 0%, transparent 70%);
-      border:1px solid rgba(220,218,217,0.1); border-radius:16px;
-      padding:48px; text-align:center; margin-bottom:40px;
-    }
-    .cta-strip h3 { font-size:24px; font-weight:900; margin-bottom:10px; }
-    .cta-strip p { font-size:15px; color:var(--gravel); margin-bottom:32px; max-width:480px; margin-left:auto; margin-right:auto; }
-    .btn {
-      display:inline-flex; align-items:center; gap:8px;
-      font-family:'Satoshi',sans-serif; font-size:14px; font-weight:700;
-      padding:15px 32px; border-radius:9px; text-decoration:none; border:none; cursor:pointer;
-      transition:transform 0.25s, box-shadow 0.25s;
-    }
-    .btn:hover { transform:translateY(-2px); }
-    .btn-light { background:var(--limestone); color:var(--obsidian); }
-    .btn-light:hover { box-shadow:0 10px 30px rgba(220,218,217,0.2); }
-    .btn-outline { background:transparent; color:var(--limestone); border:1px solid rgba(220,218,217,0.25); }
-    .btn-outline:hover { border-color:rgba(220,218,217,0.5); }
+    .modal-body { padding:28px 30px 32px; }
+    .video-wrap { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:14px; background:#000; margin-bottom:24px; }
+    .video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+    .modal-desc { font-size:14.5px; color:var(--gravel); line-height:1.78; }
 
     /* MOBILE */
-    .mobile-menu-btn { display:none; background:none; border:none; color:var(--limestone); cursor:pointer; padding:8px; }
+    .mobile-menu-btn { display:none; }
     @media(max-width:900px) {
-      :root { --sidebar:0px; }
-      .sidebar { transform:translateX(-100%); transition:transform 0.3s; width:260px; }
+      :root { --sidebar-w:0px; }
+      .sidebar { transform:translateX(-100%); transition:transform .3s; width:260px; }
       .sidebar.open { transform:translateX(0); }
       .main { margin-left:0; }
       .topbar { padding:0 20px; }
       .content { padding:24px 20px; }
-      .welcome-banner { flex-direction:column; gap:20px; padding:28px 24px; }
+      .welcome-inner { flex-direction:column; gap:20px; padding:28px 24px; }
       .welcome-badge { display:none; }
       .modules-grid { grid-template-columns:1fr; }
       .mobile-menu-btn { display:flex; }
-      .topbar-user .user-name { display:none; }
+      .user-name { display:none; }
     }
   </style>
 </head>
 <body>
+
+<!-- ── FIXED LAYERS ── -->
+<canvas id="bg-canvas"></canvas>
+<canvas id="grain-canvas"></canvas>
+<div class="scan-line"></div>
+<div class="c-dot" id="cdot"></div>
+<div class="c-ring" id="cring"></div>
 
 <!-- ════ SIDEBAR ════ -->
 <aside class="sidebar" id="sidebar">
@@ -198,24 +247,24 @@
   </a>
 
   <div class="sidebar-section">Aprendizado</div>
-  <button class="sidebar-item active" onclick="setTab('inicio')">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" stroke="#dcdad9" stroke-width="1.5"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="#dcdad9" stroke-width="1.5"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="#dcdad9" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="#dcdad9" stroke-width="1.5"/></svg>
+  <button class="sidebar-item active" onclick="setTab('inicio',this)">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.2" stroke="#dcdad9" stroke-width="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.2" stroke="#dcdad9" stroke-width="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.2" stroke="#dcdad9" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.2" stroke="#dcdad9" stroke-width="1.5"/></svg>
     Início
   </button>
-  <button class="sidebar-item" onclick="setTab('modulos')">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h8" stroke="#dcdad9" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <button class="sidebar-item" onclick="setTab('modulos',this)">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h8" stroke="#dcdad9" stroke-width="1.5" stroke-linecap="round"/></svg>
     Módulos
   </button>
 
-  <div class="sidebar-section" style="margin-top:16px;">Comunidade</div>
+  <div class="sidebar-section" style="margin-top:12px;">Comunidade</div>
   <a class="sidebar-item" href="https://api.whatsapp.com/message/INHRTEM6H4HFM1?autoload=1&app_absent=0" target="_blank">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5C4.41 1.5 1.5 4.41 1.5 8c0 1.16.3 2.25.83 3.2L1.5 14.5l3.38-.82A6.48 6.48 0 008 14.5c3.59 0 6.5-2.91 6.5-6.5S11.59 1.5 8 1.5z" stroke="#dcdad9" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5C4.41 1.5 1.5 4.41 1.5 8c0 1.16.3 2.25.83 3.2L1.5 14.5l3.38-.82A6.48 6.48 0 008 14.5c3.59 0 6.5-2.91 6.5-6.5S11.59 1.5 8 1.5z" stroke="#dcdad9" stroke-width="1.5" stroke-linejoin="round"/></svg>
     Falar com a Aline
   </a>
 
   <div class="sidebar-footer">
     <a href="index.html">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8.5 2.5L3.5 7l5 4.5" stroke="#7b787a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M8.5 2.5L3.5 7l5 4.5" stroke="#7b787a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Voltar ao site
     </a>
   </div>
@@ -224,13 +273,12 @@
 <!-- ════ MAIN ════ -->
 <div class="main">
 
-  <!-- TOP BAR -->
   <header class="topbar">
-    <div style="display:flex;align-items:center;gap:16px;">
+    <div class="topbar-left">
       <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="#dcdad9" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
-      <span class="topbar-title" id="topbar-title">Início</span>
+      <span class="topbar-title" id="topbar-title">Módulos</span>
     </div>
     <div class="topbar-user">
       <div class="user-avatar" id="user-avatar">?</div>
@@ -238,96 +286,108 @@
     </div>
   </header>
 
-  <!-- CONTENT -->
   <main class="content" id="main-content">
 
-    <!-- TAB: INÍCIO -->
+    <!-- TAB: INÍCIO / MÓDULOS (mesma view) -->
     <div id="tab-inicio">
 
+      <!-- Welcome Banner -->
       <div class="welcome-banner">
-        <div class="welcome-text">
-          <h2>Bem-vinda, <span id="welcome-name">membro</span>! 👋</h2>
-          <p>Você está na área de membros da Oficina D.R.O. Aqui você tem acesso a conteúdos gratuitos sobre vendas, estratégia e diagnóstico comercial.</p>
-        </div>
-        <div class="welcome-badge">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-            <circle cx="18" cy="18" r="16" stroke="#dcdad9" stroke-width="1.5" stroke-dasharray="4 6"/>
-            <path d="M12 18l4 4 8-8" stroke="#dcdad9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+        <div class="welcome-inner">
+          <div class="welcome-text">
+            <h2>Bem-vinda, <span id="welcome-name">membro</span>! 👋</h2>
+            <p>Você está na área de membros da Oficina D.R.O. Aqui você tem acesso a conteúdos gratuitos sobre vendas, estratégia e diagnóstico comercial.</p>
+          </div>
+          <div class="welcome-badge">
+            <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+              <circle cx="18" cy="18" r="16" stroke="rgba(220,218,217,.4)" stroke-width="1.5" stroke-dasharray="4 6"/>
+              <path d="M12 18l4 4 8-8" stroke="#dcdad9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
         </div>
       </div>
 
+      <!-- Progress -->
       <div class="progress-section">
         <div class="progress-header">
-          <span class="section-title">Seu progresso</span>
-          <span style="font-size:12px;color:var(--pebble);" id="progress-text">1 de 3 módulos</span>
+          <span class="section-label">Seu progresso</span>
+          <span class="progress-count" id="progress-text">1 de 3 módulos</span>
         </div>
         <div class="progress-bar-outer">
-          <div class="progress-bar-inner" id="progress-bar" style="width:33%"></div>
+          <div class="progress-bar-inner" id="progress-bar"></div>
         </div>
       </div>
 
-      <p class="section-title" style="margin-bottom:20px;">Módulos disponíveis</p>
+      <!-- Modules -->
+      <p class="modules-title">Módulos disponíveis</p>
       <div class="modules-grid">
 
-        <!-- MÓDULO 1 — LIBERADO -->
-        <div class="module-card" onclick="openLesson('aula1')">
+        <!-- Módulo 1 — Liberado -->
+        <div class="module-card active-card" onclick="openLesson('aula1')">
           <div class="module-thumb">
             <div class="play-btn">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 4l9 5-9 5V4z" fill="#dcdad9"/></svg>
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M5 3.5l10 5.5-10 5.5V3.5z" fill="#dcdad9"/></svg>
             </div>
-            <span class="module-locked"><span class="badge-free">Gratuito</span></span>
+            <span class="badge badge-free">Gratuito</span>
           </div>
           <div class="module-body">
             <div class="module-num">Módulo 01</div>
             <div class="module-title">Como aumentar as vendas da sua empresa</div>
             <div class="module-desc">Os 4 pilares que ativam a decisão de compra: ancoragem, urgência, diferenciação e garantia.</div>
             <div class="module-meta">
-              <span class="module-duration"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#9fa4a2" stroke-width="1.2"/><path d="M6 3v3l2 1.5" stroke="#9fa4a2" stroke-width="1.2" stroke-linecap="round"/></svg> ~15 min</span>
+              <span class="module-duration">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#9fa4a2" stroke-width="1.2"/><path d="M6 3v3l2 1.5" stroke="#9fa4a2" stroke-width="1.2" stroke-linecap="round"/></svg>
+                ~15 min
+              </span>
             </div>
           </div>
         </div>
 
-        <!-- MÓDULO 2 — EM BREVE -->
-        <div class="module-card" style="opacity:0.5;cursor:default;" onclick="void(0)">
+        <!-- Módulo 2 — Em breve -->
+        <div class="module-card" style="opacity:.42;">
           <div class="module-thumb">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="rgba(220,218,217,0.3)" stroke-width="1.5"/><path d="M16 16l8 4-8 4v-8z" fill="rgba(220,218,217,0.3)"/></svg>
-            <span class="module-locked"><span class="badge-locked">Em breve</span></span>
+            <svg width="36" height="36" viewBox="0 0 40 40" fill="none" style="position:relative;z-index:2;"><circle cx="20" cy="20" r="18" stroke="rgba(220,218,217,.2)" stroke-width="1.5"/><path d="M16 16l8 4-8 4v-8z" fill="rgba(220,218,217,.2)"/></svg>
+            <span class="badge badge-soon">Em breve</span>
           </div>
           <div class="module-body">
             <div class="module-num">Módulo 02</div>
             <div class="module-title">O percurso do cliente — onde você perde dinheiro</div>
             <div class="module-desc">Como identificar os pontos de ruptura na jornada do seu cliente e corrigi-los.</div>
             <div class="module-meta">
-              <span class="module-duration"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#9fa4a2" stroke-width="1.2"/><path d="M6 3v3l2 1.5" stroke="#9fa4a2" stroke-width="1.2" stroke-linecap="round"/></svg> Em breve</span>
+              <span class="module-duration">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#9fa4a2" stroke-width="1.2"/><path d="M6 3v3l2 1.5" stroke="#9fa4a2" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Em breve
+              </span>
             </div>
           </div>
         </div>
 
-        <!-- MÓDULO 3 — EM BREVE -->
-        <div class="module-card" style="opacity:0.5;cursor:default;" onclick="void(0)">
+        <!-- Módulo 3 — Em breve -->
+        <div class="module-card" style="opacity:.42;">
           <div class="module-thumb">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="rgba(220,218,217,0.3)" stroke-width="1.5"/><path d="M16 16l8 4-8 4v-8z" fill="rgba(220,218,217,0.3)"/></svg>
-            <span class="module-locked"><span class="badge-locked">Em breve</span></span>
+            <svg width="36" height="36" viewBox="0 0 40 40" fill="none" style="position:relative;z-index:2;"><circle cx="20" cy="20" r="18" stroke="rgba(220,218,217,.2)" stroke-width="1.5"/><path d="M16 16l8 4-8 4v-8z" fill="rgba(220,218,217,.2)"/></svg>
+            <span class="badge badge-soon">Em breve</span>
           </div>
           <div class="module-body">
             <div class="module-num">Módulo 03</div>
             <div class="module-title">Previsibilidade de faturamento</div>
             <div class="module-desc">Como estruturar um processo comercial que gera resultado consistente sem depender de você.</div>
             <div class="module-meta">
-              <span class="module-duration"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#9fa4a2" stroke-width="1.2"/><path d="M6 3v3l2 1.5" stroke="#9fa4a2" stroke-width="1.2" stroke-linecap="round"/></svg> Em breve</span>
+              <span class="module-duration">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#9fa4a2" stroke-width="1.2"/><path d="M6 3v3l2 1.5" stroke="#9fa4a2" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Em breve
+              </span>
             </div>
           </div>
         </div>
 
-      </div>
+      </div><!-- /modules-grid -->
 
+      <!-- CTA Strip -->
       <div class="cta-strip">
         <h3>Quer avançar mais rápido?</h3>
-        <p>Quando você estiver pronta para dar o próximo passo, entre em contato comigo e vamos conversar.</p>
-        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-          <a href="https://wa.me/5511982725012" target="_blank" class="btn btn-light">Conhecer a Oficina D.R.O →</a>
-        </div>
+        <p>Quando você estiver pronta para dar o próximo passo, entre em contato e vamos conversar sobre o seu negócio.</p>
+        <a href="https://api.whatsapp.com/message/INHRTEM6H4HFM1?autoload=1&app_absent=0" target="_blank" class="btn btn-light">Conhecer a Oficina D.R.O →</a>
       </div>
 
     </div><!-- /tab-inicio -->
@@ -335,21 +395,17 @@
   </main>
 </div>
 
-<!-- ════ MODAL AULA ════ -->
+<!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeLesson(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <h3 id="modal-title">Módulo 01</h3>
+      <h3 id="modal-title">Módulo</h3>
       <button class="modal-close" onclick="closeLesson()">✕</button>
     </div>
     <div class="modal-body">
       <div class="video-wrap">
-        <iframe id="modal-video"
-          src=""
-          title="Aula"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
+        <iframe id="modal-video" src="" title="Aula"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
       <p class="modal-desc" id="modal-desc"></p>
     </div>
@@ -357,60 +413,113 @@
 </div>
 
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKVRUIdSz7KU9hwoscAHKlODLNe0fUfGn74eQJmIRaKld-7UoiuZze-cahURaqM1YvBQ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKVRUIdSz7KU9hwoscAHKlODLNe0fUfGn74eQJmIRaKld-7UoiuZze-cahURaqM1YvBQ/exec';
 
-  // ── Auth check ──
-  const email = localStorage.getItem('dro_email');
-  const nome  = localStorage.getItem('dro_nome') || 'membro';
-  if (!email) {
-    window.location.href = 'comunidade.html';
+/* ── Auth ── */
+const email = localStorage.getItem('dro_email');
+const nome  = localStorage.getItem('dro_nome') || 'membro';
+if (!email) window.location.href = 'comunidade.html';
+
+document.getElementById('welcome-name').textContent = nome.split(' ')[0];
+document.getElementById('user-name').textContent    = nome.split(' ')[0];
+document.getElementById('user-avatar').textContent  = nome.charAt(0).toUpperCase();
+
+fetch(SCRIPT_URL + '?' + new URLSearchParams({ action:'access', email }), { mode:'no-cors' }).catch(() => {});
+
+/* ── Sidebar tab ── */
+function setTab(tab, btn) {
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbar-title').textContent = tab === 'inicio' ? 'Início' : 'Módulos';
+}
+
+/* ── Progress bar animate ── */
+setTimeout(() => { document.getElementById('progress-bar').style.width = '33%'; }, 400);
+
+/* ── Lessons ── */
+const lessons = {
+  aula1: {
+    title: 'Módulo 01 — Como aumentar as vendas',
+    video: 'https://www.youtube.com/embed/Nz8sWyZ1bes?rel=0&autoplay=1',
+    desc: 'Nessa aula você vai aprender os 4 pilares que ativam a decisão de compra do seu cliente: Ancoragem de Valor, Urgência Real, Diferenciação Clara e Garantia Estratégica. Aplique hoje mesmo e veja a diferença no seu processo de vendas.'
   }
+};
 
-  // ── Set user info ──
-  document.getElementById('welcome-name').textContent = nome.split(' ')[0];
-  document.getElementById('user-name').textContent    = nome.split(' ')[0];
-  document.getElementById('user-avatar').textContent  = nome.charAt(0).toUpperCase();
+function openLesson(id) {
+  const l = lessons[id];
+  if (!l) return;
+  document.getElementById('modal-title').textContent = l.title;
+  document.getElementById('modal-video').src         = l.video;
+  document.getElementById('modal-desc').textContent  = l.desc;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
 
-  // ── Track access ──
-  const params = new URLSearchParams({ action:'access', email });
-  fetch(SCRIPT_URL + '?' + params.toString(), { mode:'no-cors' }).catch(() => {});
+function closeLesson(e) {
+  if (e && e.target !== document.getElementById('modal-overlay') && !e.target.classList.contains('modal-close')) return;
+  document.getElementById('modal-video').src = document.getElementById('modal-video').src;
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
 
-  // ── Tab navigation ──
-  function setTab(tab) {
-    document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    document.getElementById('topbar-title').textContent = tab === 'inicio' ? 'Início' : 'Módulos';
-  }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLesson({ target: document.getElementById('modal-overlay') }); });
 
-  // ── Lessons ──
-  const lessons = {
-    aula1: {
-      title: 'Módulo 01 — Como aumentar as vendas',
-      video: 'https://www.youtube.com/embed/Nz8sWyZ1bes?rel=0&autoplay=1',
-      desc: 'Nessa aula você vai aprender os 4 pilares que ativam a decisão de compra do seu cliente: Ancoragem de Valor, Urgência Real, Diferenciação Clara e Garantia Estratégica. Aplique hoje mesmo e veja a diferença no seu processo de vendas.'
-    }
-  };
+/* ── CONSTELLATION ── */
+(function(){
+  const c=document.getElementById('bg-canvas'),x=c.getContext('2d');
+  function rsz(){c.width=innerWidth;c.height=innerHeight;}rsz();window.addEventListener('resize',rsz);
+  const pts=Array.from({length:90},()=>({px:Math.random(),py:Math.random(),r:Math.random()*.8+.1,a:Math.random()*.22+.04,vx:(Math.random()-.5)*.00009,vy:(Math.random()-.5)*.00009,ph:Math.random()*Math.PI*2}));
+  (function draw(){
+    x.clearRect(0,0,c.width,c.height);const W=c.width,H=c.height;
+    pts.forEach(p=>{p.px+=p.vx;p.py+=p.vy;p.ph+=.01;if(p.px<0)p.px=1;if(p.px>1)p.px=0;if(p.py<0)p.py=1;if(p.py>1)p.py=0;const op=p.a*(.6+.4*Math.sin(p.ph));x.beginPath();x.arc(p.px*W,p.py*H,p.r,0,Math.PI*2);x.fillStyle=`rgba(190,190,191,${op})`;x.fill();});
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=(pts[i].px-pts[j].px)*W,dy=(pts[i].py-pts[j].py)*H,d=Math.sqrt(dx*dx+dy*dy);if(d<110){x.beginPath();x.moveTo(pts[i].px*W,pts[i].py*H);x.lineTo(pts[j].px*W,pts[j].py*H);x.strokeStyle=`rgba(190,190,191,${.025*(1-d/110)})`;x.lineWidth=.35;x.stroke();}}
+    requestAnimationFrame(draw);
+  })();
+})();
 
-  function openLesson(id) {
-    const lesson = lessons[id];
-    if (!lesson) return;
-    document.getElementById('modal-title').textContent = lesson.title;
-    document.getElementById('modal-video').src         = lesson.video;
-    document.getElementById('modal-desc').textContent  = lesson.desc;
-    document.getElementById('modal-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
+/* ── GRAIN ── */
+(function(){
+  const c=document.getElementById('grain-canvas'),g=c.getContext('2d');
+  function rsz(){c.width=innerWidth;c.height=innerHeight;}rsz();window.addEventListener('resize',rsz);
+  (function grain(){const d=g.createImageData(c.width,c.height),b=d.data;for(let i=0;i<b.length;i+=4){const v=Math.random()*255;b[i]=b[i+1]=b[i+2]=v;b[i+3]=255;}g.putImageData(d,0,0);setTimeout(()=>requestAnimationFrame(grain),90);})();
+})();
 
-  function closeLesson(e) {
-    if (e && e.target !== document.getElementById('modal-overlay') && !e.target.classList.contains('modal-close')) return;
-    const iframe = document.getElementById('modal-video');
-    iframe.src = iframe.src; // stop video
-    document.getElementById('modal-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-  }
+/* ── CURSOR ── */
+(function(){
+  const dot=document.getElementById('cdot'),ring=document.getElementById('cring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';document.body.style.setProperty('--smx',mx+'px');document.body.style.setProperty('--smy',my+'px');});
+  (function raf(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(raf);})();
+  document.querySelectorAll('a,button,.module-card.active-card,.btn').forEach(el=>{el.addEventListener('mouseenter',()=>ring.classList.add('hov'));el.addEventListener('mouseleave',()=>ring.classList.remove('hov'));});
+  document.addEventListener('mousedown',()=>ring.classList.add('clk'));
+  document.addEventListener('mouseup',()=>ring.classList.remove('clk'));
+})();
 
-  // ESC key
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLesson({target: document.getElementById('modal-overlay')}); });
+/* ── CARD SPOTLIGHT + TILT ── */
+document.querySelectorAll('.module-card.active-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    card.style.setProperty('--bx',(e.clientX-r.left)+'px');
+    card.style.setProperty('--by',(e.clientY-r.top)+'px');
+    const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(800px) rotateY(${x*5}deg) rotateX(${-y*5}deg) translateZ(4px)`;
+  });
+  card.addEventListener('mouseleave',()=>card.style.transform='perspective(800px) rotateY(0) rotateX(0) translateZ(0)');
+});
+
+/* ── MAGNETIC BUTTON ── */
+document.querySelectorAll('.btn').forEach(el=>{
+  el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect();el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.2}px,${(e.clientY-r.top-r.height/2)*.2}px)`;});
+  el.addEventListener('mouseleave',()=>el.style.transform='');
+});
+
+/* ── RIPPLE ── */
+document.addEventListener('click',e=>{
+  const r=document.createElement('div');r.className='ripple-fx';
+  Object.assign(r.style,{left:e.clientX+'px',top:e.clientY+'px',width:'6px',height:'6px',background:'rgba(220,218,217,0.22)',transform:'translate(-50%,-50%)'});
+  document.body.appendChild(r);
+  r.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:.7},{transform:'translate(-50%,-50%) scale(18)',opacity:0}],{duration:700,easing:'ease-out'}).onfinish=()=>r.remove();
+});
 </script>
 </body>
 </html>

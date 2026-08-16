@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /membros.html
+
+Sitemap: https://divarebelon-droid.github.io/oficina-dro/sitemap.xml

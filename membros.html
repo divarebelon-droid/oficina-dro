@@ -219,6 +219,19 @@
     .yt-toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(90px); background:#1a1a1a; color:#dcdad9; border:1px solid rgba(220,218,217,0.25); border-radius:10px; padding:12px 24px; font-size:14px; font-weight:600; z-index:9999; transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .35s; opacity:0; pointer-events:none; white-space:nowrap; box-shadow:0 8px 30px rgba(0,0,0,0.5); }
     .yt-toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
     .modal-desc { font-size:14.5px; color:var(--gravel); line-height:1.78; }
+    .lesson-materials { margin-top:28px; display:none; gap:14px; }
+    .lesson-materials.visible { display:grid; }
+    .materials-heading { font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(220,218,217,.38); }
+    .material-card { border:1px solid rgba(220,218,217,.09); border-radius:14px; background:rgba(255,255,255,.025); overflow:hidden; }
+    .material-card summary { list-style:none; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:17px 18px; font-size:14px; font-weight:700; color:var(--limestone); }
+    .material-card summary::-webkit-details-marker { display:none; }
+    .material-card summary::after { content:'+'; color:var(--pebble); font-size:20px; font-weight:400; transition:transform .2s; }
+    .material-card[open] summary::after { transform:rotate(45deg); }
+    .material-content { padding:0 18px 18px; }
+    .material-actions { display:flex; justify-content:flex-end; margin-bottom:14px; }
+    .copy-material { font-family:'Satoshi',sans-serif; font-size:11px; font-weight:700; color:var(--limestone); background:rgba(220,218,217,.07); border:1px solid rgba(220,218,217,.14); border-radius:8px; padding:8px 12px; transition:background .2s,border-color .2s; }
+    .copy-material:hover { background:rgba(220,218,217,.13); border-color:rgba(220,218,217,.28); }
+    .material-text { white-space:pre-wrap; font-family:'Satoshi',sans-serif; font-size:13.5px; color:var(--mist); line-height:1.72; }
 
     /* MOBILE */
     .mobile-menu-btn { display:none; }
@@ -365,6 +378,9 @@
               <button onclick="event.stopPropagation();openLesson('est1')" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:inherit;cursor:pointer;font-size:.85rem;text-align:left;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">
                 <span style="font-size:1.1rem;">▶</span><span>Aula 01 — Estratégia</span>
               </button>
+              <button onclick="event.stopPropagation();openLesson('est2')" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:inherit;cursor:pointer;font-size:.85rem;text-align:left;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">
+                <span style="font-size:1.1rem;">▶</span><span>Aula 02 — Conteúdo estratégico sobre compulsão alimentar</span>
+              </button>
             </div>
           </div>
         </div>
@@ -418,6 +434,7 @@
         <div class="yt-shield yt-shield-br"  onclick="ytToast()"></div>
       </div>
       <p class="modal-desc" id="modal-desc"></p>
+      <div class="lesson-materials" id="lesson-materials"></div>
     </div>
   </div>
 </div>
@@ -465,6 +482,182 @@ const lessons = {
     title: 'Módulo Estratégias — Aula 01',
     video: 'https://www.youtube-nocookie.com/embed/QDKgUZSRDPI?rel=0&autoplay=1&iv_load_policy=3',
     desc: 'Primeira aula do Módulo Estratégias — estratégias testadas e validadas para você aplicar no seu negócio.'
+  },
+  est2: {
+    title: 'Módulo Estratégias — Aula 02: Compulsão alimentar',
+    video: 'https://www.youtube-nocookie.com/embed/GqhF8dh3bzU?rel=0&autoplay=1&iv_load_policy=3',
+    desc: 'Veja, na prática, como transformar uma estratégia aplicada com uma cliente em conteúdos que educam, criam identificação e conduzem a paciente para o próximo passo. Abaixo da aula estão os roteiros completos do carrossel e dos stories, prontos para consultar e adaptar.',
+    materials: [
+      {
+        title: 'Material gratuito — Conteúdo para carrossel',
+        text: `HEADLINE
+É esse o passo a passo que eu uso para diminuir a compulsão alimentar das minhas pacientes
+
+SLIDE 02
+Se você sente que perde o controle quando começa a comer, provavelmente já ouviu:
+
+“É só ter mais força de vontade”
+“É só fechar a boca”
+“Não compre doces que você não vai comer”
+
+Mas compulsão alimentar não se resolve simplesmente com mais restrição
+
+SLIDE 03
+Inclusive, foi uma das coisas que mais me chamou atenção quando atendi uma paciente aqui
+
+Ela tinha muita compulsão por doces e estava tentando emagrecer ao mesmo tempo
+
+Quanto mais desorganizada estava a rotina dela, mais difícil ficava controlar a alimentação
+
+Então, antes de pensar em tirar o doce, eu precisei entender o que estava levando ela a procurá-lo
+
+SLIDE 04
+O meu passo a passo começa por quatro pontos:
+
+1. Entender a rotina alimentar
+2. Identificar o que está favorecendo os episódios de compulsão
+3. Organizar a alimentação ao longo do dia
+4. Trabalhar a relação com os alimentos, sem transformar a dieta em uma lista de proibições
+
+SLIDE 05
+E quando você começa a cuidar do que está por trás da compulsão, uma coisa muito importante acontece:
+
+Você deixa de sentir que precisa lutar contra a comida o tempo inteiro
+
+Foi o que aconteceu com ela
+
+Hoje ela reduziu muito a quantidade de doces que consumia e chegou a relatar que, quando come determinada quantidade, já sente que não faz mais sentido continuar
+
+SLIDE 06
+E tem uma parte desse processo que considero fundamental:
+
+• Ensinar a pessoa a comer
+
+Não é simplesmente dizer o que pode ou não pode
+
+É criar uma rotina em que ela consiga fazer escolhas melhores, respeitar os horários das refeições e perceber os sinais do próprio corpo
+
+Porque se a pessoa passa o dia inteiro sem comer e chega à noite completamente desregulada, não adianta chamar isso de falta de força de vontade
+
+SLIDE 07
+Ela chegou até mim com uma rotina alimentar completamente desorganizada, sono ruim e muita compulsão por doces
+
+Agora, no sexto mês de acompanhamento, ela já eliminou 26 kg na balança, sendo 19 kg de gordura, melhorou o sono e reduziu muito a compulsão
+
+E uma das maiores viradas aconteceu quando ela conseguiu sair para almoçar com a família e controlar as quantidades sem sentir que precisava se privar de tudo
+
+SLIDE 08
+Talvez o que esteja faltando não seja uma dieta mais rígida
+
+Talvez seja entender por que você está perdendo o controle com a comida
+
+Quando você para de tratar a compulsão apenas como um problema de comportamento e começa a olhar para o organismo e para a rotina como um todo, a estratégia muda
+
+SLIDE 09
+Se você sente que vive entre a restrição e a compulsão, me envie “COMPULSÃO” no direct
+
+Eu vou te explicar como funciona e como podemos investigar o que está por trás disso`
+      },
+      {
+        title: 'Material gratuito — Sequência de stories',
+        text: `STORY 1 — PONTO DE PARTIDA
+Texto na tela:
+Vamos descobrir se você está presa no ciclo da compulsão?
+
+Vou te dar quatro situações. E quero que você seja muito sincera comigo
+
+Você passa o dia tentando comer o mínimo possível?
+
+Enquete:
+• Sim
+• Às vezes
+
+STORY 2 — PONTO INTERMEDIÁRIO
+Texto na tela:
+Chega o final do dia…
+E aquela vontade de comer fica muito maior?
+
+Você começa pensando que vai comer só um pouquinho…
+
+Quando percebe, come muito mais do que queria
+
+Enquete:
+• Acontece comigo
+• Não
+
+STORY 3 — PONTO DE LIGAÇÃO
+Texto na tela:
+Depois vem a culpa
+Amanhã eu compenso
+Amanhã vou cortar tudo
+Amanhã eu começo de novo
+
+E aí você volta para a restrição
+
+Até o ciclo começar outra vez
+
+Caixinha:
+Em qual parte desse ciclo você mais se reconhece?
+
+STORY 4 — PONTO SUPERIOR
+Texto na tela:
+É justamente aqui que eu mudo a estratégia
+
+Quando uma paciente chega até mim vivendo esse ciclo, eu não começo dizendo o que ela precisa cortar
+
+Eu preciso descobrir o que está fazendo ela chegar naquele momento de perda de controle
+
+STORY 5 — PONTO DE DÚVIDA
+Texto na tela:
+E se não for falta de força de vontade?
+
+Pensa comigo
+
+Se você passa horas sem comer, dorme mal, tem uma rotina completamente desorganizada e passa o dia inteiro tentando se controlar
+
+Será que chamar isso de “falta de força de vontade” realmente explica o que está acontecendo?
+
+STORY 6 — PONTO SUPERIOR
+Texto na tela:
+Meu passo a passo começa aqui 👇
+
+Primeiro: eu entendo a rotina alimentar
+
+Segundo: identifico o que pode estar favorecendo esses episódios
+
+Terceiro: organizo a alimentação ao longo do dia
+
+E quarto: trabalho a relação com os alimentos sem transformar a dieta em uma lista de proibições
+
+STORY 7 — PONTO DE LIGAÇÃO
+Texto na tela:
+E aí acontece uma mudança que vai muito além da balança
+
+Uma paciente minha conseguiu chegar ao ponto de sair para almoçar com a família, comer o que queria e perceber que não precisava continuar comendo só porque estava ali
+
+Ela começou a perceber os próprios sinais
+
+Isso, para mim, é uma das maiores viradas do processo
+
+STORY 8 — PONTO PROVOCATIVO
+Texto na tela:
+Talvez você não precise aprender a se controlar mais
+Talvez precise aprender a se entender melhor
+
+Porque viver entre “segunda eu começo” e “hoje eu perdi o controle” não precisa ser a sua rotina para sempre
+
+STORY 9 — PONTO DE DECISÃO
+Texto na tela:
+Se você se reconheceu nessa história…
+
+Me manda COMPULSÃO no Direct
+
+Eu vou te explicar como funciona o acompanhamento e como podemos começar a investigar o que está por trás desse ciclo
+
+CTA na tela:
+Envie “COMPULSÃO” no Direct`
+      }
+    ]
   }
 };
 
@@ -474,8 +667,55 @@ function openLesson(id) {
   document.getElementById('modal-title').textContent = l.title;
   document.getElementById('modal-video').src         = l.video;
   document.getElementById('modal-desc').textContent  = l.desc;
+  renderMaterials(l.materials || []);
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+function renderMaterials(materials) {
+  const container = document.getElementById('lesson-materials');
+  container.replaceChildren();
+  container.classList.toggle('visible', materials.length > 0);
+  if (!materials.length) return;
+
+  const heading = document.createElement('p');
+  heading.className = 'materials-heading';
+  heading.textContent = 'Materiais complementares da aula';
+  container.appendChild(heading);
+
+  materials.forEach((material, index) => {
+    const card = document.createElement('details');
+    card.className = 'material-card';
+    if (index === 0) card.open = true;
+
+    const summary = document.createElement('summary');
+    summary.textContent = material.title;
+
+    const content = document.createElement('div');
+    content.className = 'material-content';
+
+    const actions = document.createElement('div');
+    actions.className = 'material-actions';
+
+    const copy = document.createElement('button');
+    copy.className = 'copy-material';
+    copy.type = 'button';
+    copy.textContent = 'Copiar conteúdo';
+    copy.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(material.text);
+      copy.textContent = 'Conteúdo copiado ✓';
+      setTimeout(() => { copy.textContent = 'Copiar conteúdo'; }, 2200);
+    });
+
+    const text = document.createElement('div');
+    text.className = 'material-text';
+    text.textContent = material.text;
+
+    actions.appendChild(copy);
+    content.append(actions, text);
+    card.append(summary, content);
+    container.appendChild(card);
+  });
 }
 
 function closeLesson(e) {

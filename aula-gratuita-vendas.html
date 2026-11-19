@@ -168,8 +168,7 @@
     }
     .yt-shield { position:absolute; z-index:10; pointer-events:all; cursor:default; background:transparent; }
     .yt-shield-top { top:0; left:0; right:0; height:58px; }
-    .yt-shield-bl  { bottom:0; left:0; width:100px; height:50px; }
-    .yt-shield-br  { bottom:0; right:0; width:225px; height:50px; }
+    .yt-shield-copy { bottom:12px; left:34px; width:48px; height:42px; }
     .yt-toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(90px); background:#1a1a1a; color:#dcdad9; border:1px solid rgba(220,218,217,0.25); border-radius:10px; padding:12px 24px; font-size:14px; font-weight:600; z-index:9999; transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .35s; opacity:0; pointer-events:none; white-space:nowrap; box-shadow:0 8px 30px rgba(0,0,0,0.5); }
     .yt-toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
     .video-container { max-width:860px; margin:0 auto; padding:0 48px 110px; position:relative; z-index:1; }
@@ -337,14 +336,13 @@
   <div class="video-container reveal d1">
     <div class="video-wrap">
       <iframe
-        src="https://www.youtube-nocookie.com/embed/Nz8sWyZ1bes?rel=0&modestbranding=1&iv_load_policy=3"
-        title="Como aumentar as vendas da empresa? | Diva Rebel.On"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        src="https://www.youtube-nocookie.com/embed/Nz8sWyZ1bes?rel=0&modestbranding=1&iv_load_policy=3&amp;controls=1&amp;cc_load_policy=0"
+        title="Como aumentar as vendas da empresa? | Diva Rebel.On" sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
         allowfullscreen>
       </iframe>
       <div class="yt-shield yt-shield-top" onclick="ytToast()"></div>
-      <div class="yt-shield yt-shield-bl"  onclick="ytToast()"></div>
-      <div class="yt-shield yt-shield-br"  onclick="ytToast()"></div>
+        <div class="yt-shield yt-shield-copy" onclick="ytToast()" aria-hidden="true"></div>
     </div>
   </div>
 </section>
